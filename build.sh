@@ -1,6 +1,10 @@
 #! /bin/sh
 set -e
 
+echo "################################################################################################"
+echo "# ppddl-planner: Copyright Florent Teichteil-Koenigsbuch and Guillaume Infantes and Ugur Kuter #"
+echo "################################################################################################"
+
 echo "Install ppddl-planner under a specific prefix on disk (for make install) or keep it local under the source directory (no make install) [prefix|local]?"
 read installpolicy
 PREFIX=""

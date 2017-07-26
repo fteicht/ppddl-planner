@@ -22,8 +22,6 @@ COMMON_SOURCES = \
 	src/client/ippc_client.cc\
 	src/client/string_utils.h\
 	src/client/string_utils.cc\
-	src/client/strxml.h\
-	src/client/strxml.cc\
 	src/client/system_utils.h\
 	src/client/system_utils.cc\
 	src/planners/base_planner.h\
