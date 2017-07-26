@@ -1,0 +1,44 @@
+This directory contains the C implementation of FF-v2.3, as it was
+used in the 3rd international planning competition. Build the planner
+by typing
+
+make
+
+Which produces an executable named
+
+ff
+
+Usage should be self-explanatory. Running ff without any parameters
+prints out a brief help information about the parameters that are
+applicable, which basically come down to specifying the domain and
+problem files.
+
+Have fun,
+
+Joerg Hoffmann
+
+
+IMPORTANT NOTE:
+
+FF is known to compile without problems on any Unix/Linux platform,
+*except* for the Bison/Flex technology used in the PDDL parser, which
+often creates problems due to lack of downwards compatibility. The
+code contained herein does compile in the following setting:
+
+hoffmann@mpino2302:~/FF-v2.3$ /usr/bin/bison --version
+bison (GNU Bison) 1.875d
+Written by Robert Corbett and Richard Stallman.
+
+Copyright (C) 2004 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+hoffmann@mpino2302:~/FF-v2.3$ /usr/bin/flex --version
+/usr/bin/flex version 2.5.4
+
+hoffmann@mpino2302:~/FF-v2.3$ /usr/bin/gcc --version
+gcc (GCC) 3.3.5 (Debian 1:3.3.5-5)
+Copyright (C) 2003 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+

@@ -1,0 +1,74 @@
+  ppddl-planner - client for IPPC'08
+
+  Copyright (C) 2008 Florent Teichteil-Koenigsbuch and Guillaume Infantes and Ugur Kuter
+
+  ppddl-planner is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+Comments are welcome.
+
+	- Florent Teichteil-Koenigsbuch <florent.teichteil@onera.fr>
+	- Ugur Kuter <ukuter@cs.umd.edu>
+	- Guillaume Infantes <guillaume.infantes@onera.fr>
+
+This software is a client for the 2008 International Probabilistic Planning
+Competition (IPPC'08). We used the 'team-1-script.sh' script to test a planner
+given as 1st argument on all domains and problems rooted at the directory given
+as 2nd argument. We competed with the following algorithms :
+
+  - FSP*-RelaxedDistanceHeuristic: run it with ./team-1-script.sh fsp-rdh /path/to/IPPC08/domains/root
+  
+  - FSP*-RelaxedBoundsHeuristic: run with ./team-1-script.sh fsp-rbh /path/to/IPPC08/domains/root
+  
+  - RFF-ProblemGoals: run with ./team-1-script.sh rff-pg /path/to/IPPC08/domains/root
+  
+  - RFF-BestGoals: run with ./team-1-script.sh rff-bg /path/to/IPPC08/domains/root
+
+Other variants of these algorithms as well as other algorithms can be tested,
+for instance VI, LAO* and RTDP, using graph search techniques (flat
+representation) or Algebraic Decision Diagrams (factored representation). Many
+admissible heuristics are available. The class hierarchy of our implementation
+should ease the addition of new algorithms or new heuristics with minimal
+effort.
+
+Two programs are provided with this package:
+
+  - plannerclient: client for the IPPC'08 server 'mdpsim'
+  
+  - plannertest: standalone program used to test and directly compare different algorithms
+  
+Please read the help of these programs for more details (<program-name> -- help).
+
+To compile the package, you need to install the following packages:
+
+  - libtoolized version of mdpsim
+  
+  - CUDD for Algebraic Decision Diagrams (download it at
+    ftp://vlsi.colorado.edu/pub/cudd-2.4.2.tar.gz) Please note that none of our
+    competition planners used CUDD since they are all based on a (flat) state
+    graph representation. You can of course run our competition algorithms with
+    factored representation (using CUDD for ADD encodings) and compare the
+    performances with the state graph representation...
+  
+  - the FF planner for RFF (download it at http://members.deri.at/~joergh/ff/FF-v2.3.tgz)
+  
+To install the package, you need to type the following command in a terminal window:
+
+  ./configure --prefix <path-to-installation-directory> --with-cudd-prefix=<path-cudd-compilation-directory>
+         --with-mdpsim-prefix=<path-to-mdpsim-installation-directory> --with-ff-command=<path-to-ff-command>
+  make
+  make install
+  
+Enjoy!
+Florent, Ugur, and Guillaume

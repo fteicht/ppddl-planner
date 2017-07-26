@@ -1,0 +1,15 @@
+;; Object FF-v2.3/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "FF-v2.3/"
+  :tables (list 
+   (semanticdb-table "scan-ops_pddl.y"
+    :major-mode 'c-mode
+    :tags '(("domain_definition" variable (:type "int") nil [4519 4539]) ("optional_domain_defs" variable (:type ("predicates_def" type (:type "class") nil nil)) nil [5356 5394]) ("predicates_list" variable (:type "int") nil [6099 6116]) ("CLOSE_PAREN" variable (:type ("require_key_star" type (:type "class") nil nil)) nil [6368 6399]) ("require_key_star" variable (:type "int") nil [6597 6615]) ("action_def_body" variable (:type "int") nil [8480 8497]) ("CLOSE_PAREN" variable (:dereference 1 :type ("adl_effect" type (:type "class") nil nil)) nil [10983 11310]) ("lex.ops_pddl.c" include nil nil [15303 15328]) ("opserr" function (:arguments (("errno" variable (:type "int") (reparse-symbol arg-sub-list) [15554 15564]) ("par" variable (:pointer 1 :type "char") (reparse-symbol arg-sub-list) [15565 15576])) :type "void") nil [15541 15847]) ("yyerror" function (:arguments (("msg" variable (:pointer 1 :type "char") (reparse-symbol arg-sub-list) [15866 15877])) :type "int") nil [15853 16173]) ("load_ops_file" function (:arguments (("filename" variable (:pointer 1 :type "char") (reparse-symbol arg-sub-list) [16197 16213])) :type "void") nil [16177 16593]))
+    :file "scan-ops_pddl.y"
+    :pointmax 16594
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0beta3"
+  :semanticdb-version "2.0beta3"
+  )
