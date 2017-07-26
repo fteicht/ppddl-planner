@@ -109,7 +109,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = src/commons/base_exceptions.$(OBJEXT) \
 	src/client/ippc_client.$(OBJEXT) \
-	src/client/string_utils.$(OBJEXT) src/client/strxml.$(OBJEXT) \
+	src/client/string_utils.$(OBJEXT) \
 	src/client/system_utils.$(OBJEXT) \
 	src/planners/base_planner.$(OBJEXT) \
 	src/planners/deterministic_planner.$(OBJEXT) \
@@ -425,8 +425,6 @@ COMMON_SOURCES = \
 	src/client/ippc_client.cc\
 	src/client/string_utils.h\
 	src/client/string_utils.cc\
-	src/client/strxml.h\
-	src/client/strxml.cc\
 	src/client/system_utils.h\
 	src/client/system_utils.cc\
 	src/planners/base_planner.h\
@@ -687,8 +685,6 @@ src/client/$(DEPDIR)/$(am__dirstamp):
 src/client/ippc_client.$(OBJEXT): src/client/$(am__dirstamp) \
 	src/client/$(DEPDIR)/$(am__dirstamp)
 src/client/string_utils.$(OBJEXT): src/client/$(am__dirstamp) \
-	src/client/$(DEPDIR)/$(am__dirstamp)
-src/client/strxml.$(OBJEXT): src/client/$(am__dirstamp) \
 	src/client/$(DEPDIR)/$(am__dirstamp)
 src/client/system_utils.$(OBJEXT): src/client/$(am__dirstamp) \
 	src/client/$(DEPDIR)/$(am__dirstamp)
@@ -971,7 +967,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/algorithms/$(DEPDIR)/symbolic_vi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/client/$(DEPDIR)/ippc_client.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/client/$(DEPDIR)/string_utils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@src/client/$(DEPDIR)/strxml.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/client/$(DEPDIR)/system_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/commons/$(DEPDIR)/base_exceptions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/heuristics/$(DEPDIR)/Action_Graph.Po@am__quote@
