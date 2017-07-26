@@ -653,7 +653,8 @@ void initialize_fixpoint( State *S )
       
       if ( gef_conn[i].num_PC == 0 &&
 	   gef_conn[i].num_f_PC == 0 &&
-	   !gef_conn[i].illegal ) {
+	   !gef_conn[i].illegal &&
+	   !gef_conn[i].removed ) {
 	l0P_E[lnum_0P_E++] = i;
       }
     }

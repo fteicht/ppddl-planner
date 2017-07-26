@@ -1,24 +1,3 @@
-
-/*********************************************************************
- * (C) Copyright 2001 Albert Ludwigs University Freiburg
- *     Institute of Computer Science
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
- *********************************************************************/
-
 %{
 #ifdef YYDEBUG
   extern int yydebug=1;
@@ -212,13 +191,13 @@ OPEN_PAREN  BDOMAIN_TOK  NAME  CLOSE_PAREN
 problem_defs:
 /* empty */
 |
-objects_def  problem_defs
+problem_defs objects_def
 |
-init_def  problem_defs
+problem_defs init_def
 |
-goal_def  problem_defs
+problem_defs goal_def
 |
-base_domain_name  problem_defs
+problem_defs base_domain_name
 ;
 
 
@@ -633,7 +612,7 @@ int yyerror( char *msg )
 
 {
   fflush( stdout );
-  fprintf(stderr,"\n%s: syntax error in line %d, '%s':\n", 
+  fprintf(stderr,"\n%s: syntax error in line %d, '%s':\n",
 	  gact_filename, lineno, yytext );
 
   if ( sact_err_par ) {

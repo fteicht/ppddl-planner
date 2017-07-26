@@ -20,7 +20,6 @@
  *********************************************************************/
 
 
-
 /*
  * THIS SOURCE CODE IS SUPPLIED  ``AS IS'' WITHOUT WARRANTY OF ANY KIND, 
  * AND ITS AUTHOR AND THE JOURNAL OF ARTIFICIAL INTELLIGENCE RESEARCH 
@@ -68,6 +67,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
+#include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/timeb.h>
@@ -104,8 +104,6 @@
 
 /* strcmp returns 0 if two strings are equal, which is not nice */
 #define SAME 0
-
-
 
 
 
@@ -1477,4 +1475,4 @@ extern State gplan_states[MAX_PLAN_LENGTH + 1];
 
 
 
-#endif __FF_H
+#endif /* __FF_H */

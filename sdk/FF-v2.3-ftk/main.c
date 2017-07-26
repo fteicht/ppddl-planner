@@ -1,4 +1,5 @@
 
+
 /*********************************************************************
  * (C) Copyright 2001 Albert Ludwigs University Freiburg
  *     Institute of Computer Science
@@ -18,7 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  *********************************************************************/
-
 
 
 /*
@@ -703,6 +703,7 @@ int main( int argc, char *argv[] )
   if ( !found_plan ) {
     printf("\n\nEnforced Hill-climbing failed !");
     printf("\nswitching to Best-first Search now.\n");
+    fflush(stdout);
     found_plan = do_best_first_search();
   }
 

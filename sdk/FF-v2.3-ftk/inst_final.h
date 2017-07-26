@@ -1,4 +1,5 @@
 
+
 /*********************************************************************
  * (C) Copyright 2001 Albert Ludwigs University Freiburg
  *     Institute of Computer Science
@@ -63,7 +64,7 @@
 #ifndef _INST_FINAL_H
 #define _INST_FINAL_H
 
-
+#include <stdlib.h> /* for random functions [2016/09/28:rpg] */
 
 void perform_reachability_analysis( void );
 int fact_adress( void );

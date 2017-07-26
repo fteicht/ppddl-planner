@@ -1,4 +1,5 @@
 
+
 /*********************************************************************
  * (C) Copyright 2001 Albert Ludwigs University Freiburg
  *     Institute of Computer Science
@@ -18,8 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  *********************************************************************/
-
-
 
 
 /*
@@ -227,6 +226,7 @@ Bool do_enforced_hill_climbing( State *start, State *end )
     return TRUE;
   }  
   printf("\n\nCueing down from goal distance: %4d into depth ", h);
+  fflush(stdout);
 
   while ( h != 0 ) {
     if ( !search_for_better_state( &S, h, &S_, &h_ ) ) {
@@ -235,6 +235,7 @@ Bool do_enforced_hill_climbing( State *start, State *end )
     source_to_dest( &S, &S_ );
     h = h_;
     printf("\n                                %4d            ", h);
+    fflush(stdout);
   }
 
   return TRUE;
@@ -852,9 +853,11 @@ Bool do_best_first_search( void )
       min = first->h;
       if ( start ) {
 	printf("\nadvancing to distance : %4d", min);
+	fflush(stdout);
 	start = FALSE;
       } else {
 	printf("\n                        %4d", min);
+	fflush(stdout);
       }
     }
 
@@ -927,6 +930,7 @@ void extract_plan( BfsNode *last )
 
   BfsNode *i;
   int ops[MAX_PLAN_LENGTH], num_ops;
+  State_pointer states[MAX_PLAN_LENGTH];
   int j;
 
   num_ops = 0;
@@ -936,11 +940,13 @@ void extract_plan( BfsNode *last )
 	     MAX_PLAN_LENGTH);
       exit( 1 );
     }
+    states[num_ops] = &(i->S);
     ops[num_ops++] = i->op;
   }
 
   gnum_plan_ops = 0;
   for ( j = num_ops - 1; j > -1; j-- ) {
+    source_to_dest( &(gplan_states[gnum_plan_ops+1]), states[j] );
     gplan_ops[gnum_plan_ops++] = ops[j];
   }
 

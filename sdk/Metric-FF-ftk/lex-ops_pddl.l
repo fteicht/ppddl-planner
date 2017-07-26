@@ -72,6 +72,8 @@ z [Zz]
 
 ":"{t}{y}{p}{e}{s}  {  return(TYPES_TOK); }
 
+{n}{u}{m}{b}{e}{r}  {  return(NUMBER_TOK); }
+
 ":"{c}{o}{n}{s}{t}{a}{n}{t}{s}  {  return(CONSTANTS_TOK); }
 
 ":"{p}{r}{e}{d}{i}{c}{a}{t}{e}{s}  { return(PREDICATES_TOK); }

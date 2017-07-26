@@ -281,30 +281,30 @@ void build_orig_constant_list( void )
       tmp = NULL;
     }
   }
-  
+    
   for ( tyll = gparse_functions; tyll; tyll = tyll->next ) {
     for ( tyl = tyll->args; tyl; tyl = tyl->next ) {
       if ( tyl->type->next ) {
-	tmp = new_Token( MAX_LENGTH );
-	strcpy( tmp, EITHER_STR );
-	for ( tl = tyl->type; tl; tl = tl->next ) {
-	  strcat( tmp, CONNECTOR );
-	  strcat( tmp, tl->item );
-	}
+ 	tmp = new_Token( MAX_LENGTH );
+ 	strcpy( tmp, EITHER_STR );
+ 	for ( tl = tyl->type; tl; tl = tl->next ) {
+ 	  strcat( tmp, CONNECTOR );
+ 	  strcat( tmp, tl->item );
+ 	}
       } else {
-	tmp = copy_Token( tyl->type->item );
+ 	tmp = copy_Token( tyl->type->item );
       }
       if ( (n = get_type( tmp )) == -1 ) {
-	tyl->n = lnum_types;
-	ltype_names[lnum_types++] = copy_Token( tmp );
+ 	tyl->n = lnum_types;
+ 	ltype_names[lnum_types++] = copy_Token( tmp );
       } else {
-	tyl->n = n;
+ 	tyl->n = n;
       }
       free( tmp );
       tmp = NULL;
     }
   }
-    
+
   collect_type_names_in_pl( gorig_goal_facts );
 
   for ( po = gloaded_ops; po; po = po->next ) {

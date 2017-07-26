@@ -1,4 +1,5 @@
 
+
 /*********************************************************************
  * (C) Copyright 2001 Albert Ludwigs University Freiburg
  *     Institute of Computer Science
@@ -18,8 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  *********************************************************************/
-
-
 
 
 /*
@@ -54,7 +53,7 @@
  *              the code is responsible for the heuristic evaluation
  *              of states during search.
  *
- *              --- THE HEART PEACE OF THE FF PLANNER ! ---
+ *              --- THE HEART PIECE OF THE FF PLANNER ! ---
  *
  *              - fast (time critical) computation of the relaxed fixpoint
  *              - extraction of as short as possible plans, without search

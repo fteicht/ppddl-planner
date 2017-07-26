@@ -108,7 +108,7 @@ int supported( char *str )
   char * sup[] = { ":STRIPS", ":NEGATION", ":EQUALITY",":TYPING", 
 		   ":CONDITIONAL-EFFECTS", ":NEGATIVE-PRECONDITIONS", ":DISJUNCTIVE-PRECONDITIONS", 
 		   ":EXISTENTIAL-PRECONDITIONS", ":UNIVERSAL-PRECONDITIONS", 
-		   ":QUANTIFIED-PRECONDITIONS", ":ADL", ":FLUENTS",
+		   ":QUANTIFIED-PRECONDITIONS", ":ADL", ":FLUENTS", ":ACTION-COSTS",
 		   NULL };     
 
   for (i=0; NULL != sup[i]; i++) {
@@ -159,6 +159,7 @@ int supported( char *str )
 %token DOMAIN_TOK
 %token REQUIREMENTS_TOK
 %token TYPES_TOK
+%token NUMBER_TOK
 %token EITHER_TOK
 %token CONSTANTS_TOK
 %token PREDICATES_TOK
@@ -306,6 +307,31 @@ functions_list :
 {}
 |
 OPEN_PAREN  NAME typed_list_variable  CLOSE_PAREN
+{
+
+  TypedListList *tll;
+
+  if ( gparse_functions ) {
+    tll = gparse_functions;
+    while ( tll->next ) {
+      tll = tll->next;
+    }
+    tll->next = new_TypedListList();
+    tll = tll->next;
+  } else {
+    tll = new_TypedListList();
+    gparse_functions = tll;
+  }
+
+  tll->predicate = new_Token( strlen( $2 ) + 1);
+  strcpy( tll->predicate, $2 );
+
+  tll->args = $3;
+
+}
+functions_list
+|
+OPEN_PAREN  NAME typed_list_variable  CLOSE_PAREN MINUS_TOK NUMBER_TOK
 {
 
   TypedListList *tll;

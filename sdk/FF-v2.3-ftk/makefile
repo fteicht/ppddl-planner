@@ -11,13 +11,29 @@ ADDONS	=
 
 CC      = gcc
 
-CFLAGS	= -O6 -Wall -g -ansi $(TYPE) $(ADDONS) 
+# changed from -ansi to -std=gnu99.  -ansi has different meanings on Mac and Linux.
+# on Linux, it doesn't allow use of random() and srandom() (see inst_final.c).
+# [2016/09/28:rpg]
+CFLAGS	= -Wall -g -std=gnu99 $(TYPE) $(ADDONS) 
 # -g -pg
+
+ifeq ($(OS),Windows_NT)
+	$(error FF unsupported on Windows)
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        CFLAGS += -O6
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        CFLAGS += -O3 # -O6 not supported by Apple's compiler
+    endif
+endif
 
 LIBS    = -lm
 
 
 ####### Files
+
 
 PDDL_PARSER_SRC	= scan-fct_pddl.tab.c \
 	scan-ops_pddl.tab.c \
