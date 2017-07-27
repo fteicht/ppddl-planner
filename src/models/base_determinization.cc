@@ -113,7 +113,9 @@ void BaseDeterminization::write_requirements(std::ofstream& cdf) const
 
 		if (domain_.requirements.conditional_effects) {cdf << " :conditional-effects";}
 	}
-	if (domain_.requirements.fluents) {cdf << " :fluents";}
+	if ((domain_.requirements.fluents) || dynamic_cast<const BaseDeterminizationWithFluents*>(this) != NULL) {
+        cdf << " :fluents";
+    }
 	cdf << ")" << std::endl;
 }
 
@@ -235,8 +237,8 @@ void BaseDeterminization::write_predicates(std::ofstream& cdf) const
 
 void BaseDeterminization::write_functions(std::ofstream& cdf) const
 {
-	if (domain_.functions().get_functions().empty())
-		return;
+	if ((!domain_.requirements.fluents) && (dynamic_cast<const BaseDeterminizationWithFluents*>(this) == NULL))
+        return;
 
 	cdf << "  (:functions" << std::endl;
 
