@@ -2,12 +2,13 @@
 #
 # nanotrav: simple FSM traversal program
 #---------------------------------------------------------------------------
-.SUFFIXES: .o .c .u
+.SUFFIXES: .lo .o .c .u
 
 CC	= gcc
 #CC	= cc
 RANLIB	= ranlib
 #RANLIB	= :
+LIBTOOL	= libtool
 PURE	=
 
 EXE	=
@@ -19,9 +20,9 @@ WHERE	= ..
 
 INCLUDE = $(WHERE)/include
 
-LIBS	= $(WHERE)/dddmp/libdddmp.a $(WHERE)/cudd/libcudd.a \
-	$(WHERE)/mtr/libmtr.a $(WHERE)/st/libst.a $(WHERE)/util/libutil.a \
-	$(WHERE)/epd/libepd.a
+LIBS	= $(WHERE)/dddmp/libdddmp.la $(WHERE)/cudd/libcudd.la \
+	$(WHERE)/mtr/libmtr.la $(WHERE)/st/libst.la $(WHERE)/util/libutil.la \
+	$(WHERE)/epd/libepd.la
 
 MNEMLIB =
 #MNEMLIB	= $(WHERE)/mnemosyne/libmnem.a
@@ -39,8 +40,9 @@ SRC	= main.c bnet.c ntr.c ntrHeap.c ntrBddTest.c ntrMflow.c ntrZddTest.c \
 HDR	= bnet.h ntr.h $(WHERE)/include/dddmp.h $(WHERE)/include/cudd.h \
 	$(WHERE)/include/cuddInt.h
 
-OBJ	= $(SRC:.c=.o)
-UBJ	= $(SRC:.c=.u)
+OBJ		= $(SRC:.c=.o)
+LOBJ	= $(SRC:.c=.lo)
+UBJ		= $(SRC:.c=.u)
 
 MFLAG	=
 #MFLAG	= -DMNEMOSYNE
@@ -61,13 +63,17 @@ LINTFLAGS = -u -n -DDD_STATS -DDD_CACHE_PROFILE -DDD_VERBOSE -DDD_DEBUG -DDD_UNI
 #------------------------------------------------------
 
 $(TARGET): $(SRC) $(OBJ) $(HDR) $(LIBS) $(MNEMLIB)
-	$(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
+	$(LIBTOOL) --mode=link $(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
+
+.c.lo: $(HDR)
+	$(LIBTOOL) --mode=compile $(CC) -c -I$(INCLUDE) $(CFLAGS) $(DDDEBUG) $<
 
 .c.o: $(HDR)
 	$(CC) -c $< -I$(INCLUDE) $(CFLAGS) $(DDDEBUG)
 
 # if the header files change, recompile
 $(OBJ): $(HDR)
+$(LOBJ): $(HDR)
 $(UBJ): $(HDR)
 
 optimize_dec: $(TARGETu)
@@ -91,8 +97,8 @@ pixie: $(TARGETu)
 	pixie $(TARGETu)
 
 clean:
-	rm -f *.o *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
+	rm -f *.o *.lo *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
 	.pure core *.warnings
 
 distclean: clean
-	rm -f $(TARGET) $(TARGETu) *.bak *~ .gdb_history *.qv *.qx
+	rm -rf $(TARGET) $(TARGETu) .libs *.bak *~ .gdb_history *.qv *.qx

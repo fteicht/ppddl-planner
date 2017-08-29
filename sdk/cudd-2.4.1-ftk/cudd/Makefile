@@ -2,10 +2,11 @@
 #
 #    Cudd - DD package
 #---------------------------
-.SUFFIXES: .o .c .u
+.SUFFIXES: .lo .o .c .u
 
 CC	= gcc
 RANLIB	= ranlib
+LIBTOOL	= libtool
 PURE	=
 # Define EXE as .exe for MS-DOS and derivatives.
 EXE	=
@@ -27,8 +28,8 @@ WHERE	= ..
 
 INCLUDE = $(WHERE)/include
 
-LIBS	= ./libcudd.a $(WHERE)/mtr/libmtr.a \
-	$(WHERE)/st/libst.a $(WHERE)/util/libutil.a $(WHERE)/epd/libepd.a
+LIBS	= ./libcudd.la $(WHERE)/mtr/libmtr.la \
+	$(WHERE)/st/libst.la $(WHERE)/util/libutil.la $(WHERE)/epd/libepd.la
 
 MNEMLIB =
 
@@ -60,16 +61,24 @@ PSRC	= cuddAPI.c cuddAddAbs.c cuddAddApply.c cuddAddFind.c cuddAddIte.c \
 	  cuddZddUtil.c
 PHDR    = cudd.h cuddInt.h
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PUBJ	= $(PSRC:.c=.u)
 TARGET	= test$(P)$(EXE)
 TARGETu = test$(P)-u
 
 # files for the test program
-SRC	= test$(P).c
-OBJ	= $(SRC:.c=.o)
-UBJ	= $(SRC:.c=.u)
+SRC		= test$(P).c
+OBJ		= $(SRC:.c=.o)
+LOBJ	= $(SRC:.c=.lo)
+UBJ		= $(SRC:.c=.u)
 
 #------------------------------------------------------
+
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
+.c.lo: $(PSRC) $(PHDR)
+	$(LIBTOOL) --mode=compile $(CC) -c  -I$(INCLUDE) $(CFLAGS) $(DDDEBUG) $<
 
 lib$(P).a: $(POBJ)
 	ar rv $@ $?
@@ -89,12 +98,14 @@ lib$(P).b: $(PUBJ)
 
 # if the header files change, recompile
 $(POBJ): $(PHDR)
+$(PLOBJ): $(PHDR)
 $(PUBJ): $(PHDR)
 $(OBJ): $(PHDR)
+$(LOBJ): $(PHDR)
 $(UBJ): $(PHDR)
 
 $(TARGET): $(SRC) $(OBJ) $(HDR) $(LIBS) $(MNEMLIB)
-	$(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
+	$(LIBTOOL) --mode=link $(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
 
 # optimize (DECstations and Alphas only: uses u-code)
 $(TARGETu): $(SRC) $(UBJ) $(HDR) $(LIBS:.a=.b)
@@ -111,14 +122,14 @@ lintpgm: lint
 tags: $(PSRC) $(PHDR)
 	ctags $(PSRC) $(PHDR)
 
-all: lib$(P).a lib$(P).b llib-l$(P).ln tags
+all: lib$(P).la lib$(P).b llib-l$(P).ln tags
 
 programs: $(TARGET) $(TARGETu) lintpgm
 
 clean:
-	rm -f *.o *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
+	rm -f *.o *.lo *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
 	.pure core *.warnings
 
 distclean: clean
-	rm -f $(TARGET) $(TARGETu) lib*.a lib$(P).b llib-l$(P).ln \
+	rm -rf $(TARGET) $(TARGETu) .libs lib*.a lib*.la lib$(P).b llib-l$(P).ln \
 	*.bak *~ tags .gdb_history *.qv *.qx

@@ -45,7 +45,7 @@ CC	= gcc
 #CC	= /usr/ucb/cc
 #CC	= c89
 
-.SUFFIXES: .o .c .u
+.SUFFIXES: .lo .o .c .u
 
 #---------------#
 # Define ranlib #
@@ -55,6 +55,9 @@ CC	= gcc
 RANLIB	= ranlib
 # For machines which either do not have ranlib or can do without it
 #RANLIB	= :
+
+# FTK: in order to link the resulting libraries to another shared libraries (e.g. libppddl_planner.so)
+LIBTOOL	= libtool
 
 #----------------------------------#
 # Define Machine Independent Flags #
@@ -74,9 +77,9 @@ ICFLAGS	= -g -O6 -Wall
 #--------------------------------#
 
 # When no special flags are needed
-#XCFLAGS	= -DHAVE_IEEE_754 -DBSD
+XCFLAGS	= -DHAVE_IEEE_754 -DBSD
 # Linux with Gcc 2.8.1 or higher on i686.
-XCFLAGS	= -mcpu=pentiumpro -malign-double -DHAVE_IEEE_754 -DBSD
+#XCFLAGS	= -mcpu=pentiumpro -malign-double -DHAVE_IEEE_754 -DBSD
 # Gcc 3.3.2 or higher on i686.
 #XCFLAGS	= -mcpu=pentium4 -malign-double -DHAVE_IEEE_754 -DBSD
 # For Solaris, BSD should not be replaced by UNIX100.
@@ -149,14 +152,16 @@ PSRC    = dddmpStoreBdd.c dddmpStoreAdd.c dddmpStoreCnf.c \
           dddmpDbg.c 
 PHDR    = dddmp.h dddmpInt.h $(INCLUDE)/cudd.h $(INCLUDE)/cuddInt.h
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PUBJ	= $(PSRC:.c=.u)
 TARGET	= test$(P)$(EXE)
 TARGETu = test$(P)-u
 
 # files for the test program
-SRC	= test$(P).c
-OBJ	= $(SRC:.c=.o)
-UBJ	= $(SRC:.c=.u)
+SRC		= test$(P).c
+OBJ		= $(SRC:.c=.o)
+LOBJ	= $(SRC:.c=.lo)
+UBJ		= $(SRC:.c=.u)
 
 #----------------------------------------------------------------------------#
 # Rules to compile and build libraries and executables                       #
@@ -164,14 +169,14 @@ UBJ	= $(SRC:.c=.u)
 
 #MFLAG =
 MFLAG   = -DMNEMOSYNE
-MNEMLIB	= ../mnemosyne/libmnem.a
+MNEMLIB	= ../mnemosyne/libmnem.la
 
 # This is to create the lint library
 LINTFLAGS = -u -n
 LINTSWITCH = -o
 
-LIBS	= ./libdddmp.a $(WHERE)/cudd/libcudd.a $(WHERE)/mtr/libmtr.a \
-	$(WHERE)/st/libst.a $(WHERE)/util/libutil.a $(WHERE)/epd/libepd.a
+LIBS	= ./libdddmp.la $(WHERE)/cudd/libcudd.la $(WHERE)/mtr/libmtr.la \
+	$(WHERE)/st/libst.la $(WHERE)/util/libutil.la $(WHERE)/epd/libepd.la
 
 MNEMLIB =
 
@@ -181,6 +186,12 @@ BLIBS	= -kL. -kldddmp -kL$(WHERE)/cudd -klcudd -kL$(WHERE)/mtr -klmtr \
 LINTLIBS = ./llib-ldddmp.ln $(WHERE)/cudd/llib-lcudd.ln \
 	$(WHERE)/mtr/llib-lmtr.ln $(WHERE)/st/llib-lst.ln \
 	$(WHERE)/util/llib-lutil.ln
+
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
+.c.lo: $(PHDR)
+	$(LIBTOOL) --mode=compile $(CC) -c -I$(INCLUDE) $(ICFLAGS) $(XCFLAGS) $(DDDEBUG) $(MTRDEBUG) $(DDDMPDEBUG) $(LDFLAGS) $<
 
 lib$(P).a: $(POBJ)
 	ar rv $@ $?
@@ -200,12 +211,14 @@ lib$(P).b: $(PUBJ)
 
 # if the header files change, recompile
 $(POBJ): $(PHDR)
+$(PLOBJ): $(PHDR)
 $(PUBJ): $(PHDR)
 $(OBJ): $(PHDR)
+$(LOBJ): $(PHDR)
 $(UBJ): $(PHDR)
 
 $(TARGET): $(SRC) $(OBJ) $(PHDR) $(LIBS) $(MNEMLIB)
-	$(PURE) $(CC) $(ICFLAGS) $(XCFLAGS) $(DDDEBUG) $(MTRDEBUG) $(DDDMPDEBUG) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
+	$(LIBTOOL) --mode=link $(PURE) $(CC) $(ICFLAGS) $(XCFLAGS) $(DDDEBUG) $(MTRDEBUG) $(DDDMPDEBUG) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
 
 # optimize (DECstations and Alphas only: uses u-code)
 $(TARGETu): $(SRC) $(UBJ) $(PHDR) $(LIBS:.a=.b)
@@ -222,7 +235,7 @@ lintpgm: lint
 tags: $(PSRC) $(PHDR)
 	ctags $(PSRC) $(PHDR)
 
-all: lib$(P).a lib$(P).b llib-l$(P).ln tags
+all: lib$(P).la lib$(P).b llib-l$(P).ln tags
 
 programs: $(TARGET) $(TARGETu) lintpgm
 
@@ -231,11 +244,11 @@ programs: $(TARGET) $(TARGETu) lintpgm
 #----------------------------------------------------------------------------#
 
 clean:
-	rm -f *.o *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
+	rm -f *.o *.lo *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
 	.pure core *.warnings
 
 distclean: clean
-	rm -f $(TARGET) $(TARGETu) lib*.a lib$(P).b llib-l$(P).ln \
+	rm -rf $(TARGET) $(TARGETu) .libs lib*.a lib*.la lib$(P).b llib-l$(P).ln \
 	*.bak *~ tags .gdb_history *.qv *.qx
 
 

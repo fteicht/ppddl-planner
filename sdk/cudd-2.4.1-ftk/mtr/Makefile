@@ -2,10 +2,11 @@
 #
 #    mtr - multiway-branching tree package
 #---------------------------
-.SUFFIXES: .o .c .u
+.SUFFIXES: .lo .o .c .u
 
 CC	= cc
 RANLIB	= ranlib
+LIBTOOL	= libtool
 PURE	=
 # Define EXE as .exe for MS-DOS and derivatives.
 EXE	=
@@ -31,15 +32,17 @@ P	= mtr
 PSRC    = mtrBasic.c mtrGroup.c
 PHDR    = mtr.h
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PUBJ	= $(PSRC:.c=.u)
 SRC	= test$(P).c
 HDR	=
-OBJ	= $(SRC:.c=.o)
-UBJ	= $(SRC:.c=.u)
+OBJ		= $(SRC:.c=.o)
+LOBJ	= $(SRC:.c=.lo)
+UBJ		= $(SRC:.c=.u)
 TARGET	= test$(P)$(EXE)
 TARGETu	= test$(P)-u
 
-LIBS	= ./libmtr.a $(WHERE)/util/libutil.a
+LIBS	= ./libmtr.la $(WHERE)/util/libutil.la
 
 BLIBS	= -kL. -klmtr -kL$(WHERE)/util -klutil
 
@@ -48,6 +51,12 @@ MNEMLIB	=
 LINTLIBS = llib-l$(P).ln
 
 #---------------------------
+
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
+.c.lo: $(PSRC) $(PHDR)
+	$(LIBTOOL) --mode=compile $(CC) -c  -I$(INCLUDE) $(CFLAGS) $(MTRDEBUG) $<
 
 lib$(P).a: $(POBJ)
 	ar rv $@ $?
@@ -67,8 +76,10 @@ lib$(P).b: $(PUBJ)
 
 # if the header files change, recompile
 $(POBJ): $(PHDR)
+$(PLOBJ): $(PHDR)
 $(PUBJ): $(PHDR)
 $(OBJ): $(PHDR)
+$(LOBJ): $(PHDR)
 $(UBJ): $(PHDR)
 
 lint: llib-l$(P).ln
@@ -79,18 +90,18 @@ llib-l$(P).ln: $(PSRC) $(PHDR)
 tags: $(PSRC) $(PHDR)
 	ctags $(PSRC) $(PHDR)
 
-all: lib$(P).a lib$(P).b llib-l$(P).ln tags
+all: lib$(P).la lib$(P).b llib-l$(P).ln tags
 
 $(TARGET): $(POBJ) $(OBJ) $(LIBS) $(MNEMLIB)
-	$(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
+	$(LIBTOOL) --mode=link $(PURE) $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS) $(MNEMLIB) -lm
 
 $(TARGETu): $(SRC) $(PSRC) $(PHDR) $(UBJ) $(PUBJ) $(LIBS:.a=.b)
 	cc -O3 $(XCFLAGS) $(LDFLAGS) -o $@ $(UBJ) $(BLIBS) -lm
 
 clean:
-	rm -f *.o *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
+	rm -f *.o *.lo *.u mon.out gmon.out *.pixie *.Addrs *.Counts mnem.* \
 	.pure core *.warnings
 
 distclean: clean
-	rm -f $(TARGET) $(TARGETu) lib*.a lib$(P).b llib-l$(P).ln \
+	rm -rf $(TARGET) $(TARGETu) .libs lib*.a lib*.la lib$(P).b llib-l$(P).ln \
 	*.bak *~ tags *.qv *.qx

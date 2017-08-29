@@ -228,15 +228,15 @@ OPEN_PAREN  BDOMAIN_TOK  NAME  CLOSE_PAREN
 problem_defs:
 /* empty */
 |
-objects_def  problem_defs
+problem_defs objects_def
 |
-init_def  problem_defs
+problem_defs init_def
 |
-goal_def  problem_defs
+problem_defs goal_def
 |
-base_domain_name  problem_defs
+problem_defs base_domain_name
 |
-metric_def problem_defs
+problem_defs metric_def
 ;
 
 

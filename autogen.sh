@@ -31,7 +31,7 @@ then
     exit 1
 fi
 
-# LIBTOOLIZE=${LIBTOOLIZE:-libtoolize}
+LIBTOOLIZE=${LIBTOOLIZE:-libtoolize}
 AUTOCONF=${AUTOCONF:-autoconf}
 AUTOMAKE=${AUTOMAKE:-automake}
 
@@ -46,7 +46,7 @@ do_cmd() {
 }
 
 do_cmd $ACLOCAL $ACLOCAL_FLAGS
-# do_cmd $LIBTOOLIZE --force
+do_cmd $LIBTOOLIZE --force
 do_cmd $AUTOCONF
 do_cmd $AUTOMAKE --add-missing --gnu
 do_cmd ./configure "$@"

@@ -33,7 +33,7 @@ typedef enum
 }
 test_planner_t;
 
-class TestPlanner : public BasePlanner
+class SimulationTestPlanner : public BasePlanner
 {
 public :
 	struct SimulationInfo
@@ -64,7 +64,7 @@ protected :
 
 public :
 	/* Constructs a planner. */
-	TestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+	SimulationTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 			determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 			double epsilon = 0.000001, double discount_factor = 0.9, long time_threshold = 900000,
 			unsigned int trials_number = 100, unsigned int trials_max_depth = 1000,
@@ -76,7 +76,7 @@ public :
             bool compute_goal_statistics = false, algorithm_t goal_statistics_algorithm = ALGORITHM_GCE);
 
 	/* Deletes this planner. */
-	virtual ~TestPlanner();
+	virtual ~SimulationTestPlanner();
 
 	/* Launches the tests */
 	SimulationInfo launch();
@@ -92,7 +92,7 @@ public :
 };
 
 
-class CompleteTestPlanner : public TestPlanner
+class SimulationTestCompletePlanner : public SimulationTestPlanner
 {
 private :
 	/* Checks if the policy need to be optimized in the given state */
@@ -101,7 +101,7 @@ private :
 public :
 	public :
 	/* Constructs a planner. */
-	CompleteTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+	SimulationTestCompletePlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 			determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 			double epsilon = 0.000001, double discount_factor = 0.9, long time_threshold = 900000,
 			unsigned int trials_number = 100, unsigned int trials_max_depth = 1000,
@@ -113,11 +113,11 @@ public :
             bool compute_goal_statistics = false, algorithm_t goal_statistics_algorithm = ALGORITHM_GCE);
 
 	/* Deletes this planner. */
-	virtual ~CompleteTestPlanner() {}
+	virtual ~SimulationTestCompletePlanner() {}
 };
 
 
-class AnytimeTestPlanner : public TestPlanner
+class SimulationTestAnytimePlanner : public SimulationTestPlanner
 {
 private :
 	/* Checks if the policy need to be optimized in the given state */
@@ -126,7 +126,7 @@ private :
 public :
 	public :
 	/* Constructs a planner. */
-	AnytimeTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+	SimulationTestAnytimePlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 			determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 			double epsilon = 0.000001, double discount_factor = 0.9, long time_threshold = 900000,
 			unsigned int trials_number = 100, unsigned int trials_max_depth = 1000,
@@ -138,7 +138,7 @@ public :
             bool compute_goal_statistics = false, algorithm_t goal_statistics_algorithm = ALGORITHM_GCE);
 
 	/* Deletes this planner. */
-	virtual ~AnytimeTestPlanner() {}
+	virtual ~SimulationTestAnytimePlanner() {}
 };
 
 #endif /*TEST_PLANNER_H_*/

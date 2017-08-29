@@ -25,7 +25,7 @@
 
 // CLASS TestPlanner
 
-TestPlanner::TestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+SimulationTestPlanner::SimulationTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 		determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 		double epsilon, double discount_factor, long time_threshold, unsigned int trials_number, unsigned int trials_max_depth,
 		double probabilistic_threshold, unsigned int nb_of_particles, unsigned int trajectories_max_depth, unsigned int goals_limit,
@@ -44,14 +44,14 @@ TestPlanner::TestPlanner(const Problem& problem, algorithm_t alg, heuristic_t he
 }
 
 
-TestPlanner::~TestPlanner()
+SimulationTestPlanner::~SimulationTestPlanner()
 {
 	if (current_state_)
 		delete current_state_;
 }
 
 
-const Action& TestPlanner::action(const State& st)
+const Action& SimulationTestPlanner::action(const State& st)
 {
 	try
 	{
@@ -71,7 +71,7 @@ const Action& TestPlanner::action(const State& st)
 }
 
 
-double TestPlanner::value(const State& st)
+double SimulationTestPlanner::value(const State& st)
 {
 	try
 	{
@@ -91,7 +91,7 @@ double TestPlanner::value(const State& st)
 }
 
 
-TestPlanner::SimulationInfo TestPlanner::launch()
+SimulationTestPlanner::SimulationInfo SimulationTestPlanner::launch()
 {
 	SimulationInfo res;
 	res.average_cumulated_value_ = 0.0;
@@ -194,7 +194,7 @@ TestPlanner::SimulationInfo TestPlanner::launch()
 
 // CLASS CompleteTestPlanner
 
-CompleteTestPlanner::CompleteTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+SimulationTestCompletePlanner::SimulationTestCompletePlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 		determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 		double epsilon, double discount_factor, long time_threshold,
 		unsigned int trials_number, unsigned int trials_max_depth,
@@ -203,7 +203,7 @@ CompleteTestPlanner::CompleteTestPlanner(const Problem& problem, algorithm_t alg
         unsigned int deterministic_planner_timeout, unsigned int deterministic_planner_max_trials,
 		double proportion_updated_states, double minimum_mean, double maximum_variance,
 		bool compute_goal_statistics, algorithm_t goal_statistics_algorithm)
-: TestPlanner(problem, alg, heur, enc, determinization_type, deterministic_planner_type, epsilon, discount_factor, time_threshold,
+: SimulationTestPlanner(problem, alg, heur, enc, determinization_type, deterministic_planner_type, epsilon, discount_factor, time_threshold,
 		trials_number, trials_max_depth, probabilistic_threshold, nb_of_particles, trajectories_max_depth, goals_limit,
 		deterministic_probability_weight, deterministic_reward_weight, deterministic_planner_timeout, deterministic_planner_max_trials,
 		proportion_updated_states, minimum_mean, maximum_variance,
@@ -212,7 +212,7 @@ CompleteTestPlanner::CompleteTestPlanner(const Problem& problem, algorithm_t alg
 }
 
 
-void CompleteTestPlanner::check_solve(const PddlState& st)
+void SimulationTestCompletePlanner::check_solve(const PddlState& st)
 {
 	if (!(algorithm_->policy_defined(st)))
 	{
@@ -265,7 +265,7 @@ void CompleteTestPlanner::check_solve(const PddlState& st)
 
 // CLASS AnytimeTestPlanner
 
-AnytimeTestPlanner::AnytimeTestPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
+SimulationTestAnytimePlanner::SimulationTestAnytimePlanner(const Problem& problem, algorithm_t alg, heuristic_t heur, encoding_t enc,
 		determinization_t determinization_type, deterministic_planner_t deterministic_planner_type,
 		double epsilon, double discount_factor, long time_threshold,
 		unsigned int trials_number, unsigned int trials_max_depth,
@@ -274,7 +274,7 @@ AnytimeTestPlanner::AnytimeTestPlanner(const Problem& problem, algorithm_t alg, 
         unsigned int deterministic_planner_timeout, unsigned int deterministic_planner_max_trials,
 		double proportion_updated_states, double minimum_mean, double maximum_variance,
 		bool compute_goal_statistics, algorithm_t goal_statistics_algorithm)
-: TestPlanner(problem, alg, heur, enc, determinization_type, deterministic_planner_type, epsilon, discount_factor, time_threshold,
+: SimulationTestPlanner(problem, alg, heur, enc, determinization_type, deterministic_planner_type, epsilon, discount_factor, time_threshold,
 		trials_number, trials_max_depth, probabilistic_threshold, nb_of_particles, trajectories_max_depth, goals_limit,
 		deterministic_probability_weight, deterministic_reward_weight, deterministic_planner_timeout, deterministic_planner_max_trials,
 		proportion_updated_states, minimum_mean, maximum_variance,
@@ -283,7 +283,7 @@ AnytimeTestPlanner::AnytimeTestPlanner(const Problem& problem, algorithm_t alg, 
 }
 
 
-void AnytimeTestPlanner::check_solve(const PddlState& st)
+void SimulationTestAnytimePlanner::check_solve(const PddlState& st)
 {
 	long resolving_time_begin = get_time_milli();
 

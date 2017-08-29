@@ -220,6 +220,7 @@ optional_domain_defs
     printf("\ndomain '%s' defined\n", gdomain_name);
   }
 }
+CLOSE_PAREN
 ;
 
 
@@ -235,19 +236,19 @@ OPEN_PAREN  DOMAIN_TOK  NAME  CLOSE_PAREN
 
 /**********************************************************************/
 optional_domain_defs:
-CLOSE_PAREN  /* end of domain */
+/* end of domain */
 |
-require_def  optional_domain_defs
+optional_domain_defs require_def
 |
-constants_def  optional_domain_defs
+optional_domain_defs constants_def
 |
-types_def  optional_domain_defs
+optional_domain_defs types_def
 |
-predicates_def  optional_domain_defs
+optional_domain_defs predicates_def
 |
-functions_def  optional_domain_defs
+optional_domain_defs functions_def
 |
-action_def  optional_domain_defs
+optional_domain_defs action_def
 ;
 
 

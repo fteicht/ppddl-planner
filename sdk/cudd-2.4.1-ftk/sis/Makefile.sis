@@ -2,9 +2,10 @@
 #
 #    Cudd - DD package
 #---------------------------
-.SUFFIXES: .o .c .u
+.SUFFIXES: .lo .o .c .u
 
 RANLIB	= ranlib
+LIBTOOL	= libtool
 
 CAD	= /projects/octtools/octtools/$(MACHINE)
 SIS	= ..
@@ -28,15 +29,17 @@ PSRC	= cuddAPI.c cuddAddAbs.c cuddAddApply.c cuddAddFind.c cuddAddIte.c \
 	  cuddZddPort.c cuddZddReord.c cuddZddSetop.c cuddZddSymm.c \
 	  cuddZddUtil.c
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PHDR    = cudd.h cuddInt.h cuddBdd.h
 
 # files for the test program
 TARGET	= testcudd
 SRC	= testcudd.c
-OBJ	= $(SRC:.c=.o)
+OBJ	    = $(SRC:.c=.o)
+LOBJ	= $(SRC:.c=.lo)
 HDR	=
 
-LIBS	= ../util/libutil.a ../st/libst.a
+LIBS	= ../util/libutil.la ../st/libst.la
 LINTLIBS= ../util/llib-lutil.ln ../st/llib-lst.ln
 INCLUDE = -I$(CAD)/include -I$(SIS)/include
 
@@ -47,19 +50,25 @@ LINTFLAGS = $(INCLUDE) ${LINTEXTRAS}
 #------------------------------------------------------
 
 $(TARGET): $(PHDR) $(OBJ) $(POBJ) $(LIBS)
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJ) $(POBJ) $(LIBS)
+	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o $(TARGET) $(OBJ) $(POBJ) $(LIBS)
 
 lint: $(PSRC) $(PHDR) $(SRC) $(HDR)
 	lint $(LINTFLAGS) $(SRC) $(PSRC) $(LINTLIBS)
 
 install: lib$(P).a llib-l$(P).ln
 
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
 lib$(P).a: $(POBJ)
 	ar cr $@ $?
 	$(RANLIB) $@
 
-unpack: lib$(P).a
-	@for i in $(POBJ); do				\
+unpack: lib$(P).la lib$(P).a
+	@for i in $(PLOBJ); do				\
+	    ln -s $(SIS)/$(P)/$$i $(SIS)/unpack;	\
+	done
+    @for i in $(POBJ); do				\
 	    ln -s $(SIS)/$(P)/$$i $(SIS)/unpack;	\
 	done
 
@@ -67,7 +76,7 @@ llib-l$(P).ln: $(PSRC) $(PHDR)
 	lint $(LINTFLAGS) ${LINTCREATEFLAG}$(P) -n $(PSRC)
 
 clean:
-	rm -f $(TARGET) *.a *.ln *.o \
+	rm -f $(TARGET) *.a *.ln *.o *.lo \
 	    [Tt]ags [Mm]ake.out lint malloc.out gmon.out __.SYMDEF *~
 
 tags: _force

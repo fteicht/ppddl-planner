@@ -373,26 +373,26 @@ static void run_algorithm(heuristic_t heuristic, algorithm_t algorithm, encoding
         unsigned int deterministic_planner_timeout, unsigned int deterministic_planner_max_trials,
 		double proportion_updated_states, double minimum_mean, double maximum_variance)
 {
-	TestPlanner* p = NULL;
+	SimulationTestPlanner* p = NULL;
 
 	switch (test_type)
 	{
 	case TEST_PLANNER_COMPLETE :
-		p = new CompleteTestPlanner(pb, algorithm, heuristic, encoding, determinization, deterministic_planner, epsilon, discount_factor,
+		p = new SimulationTestCompletePlanner(pb, algorithm, heuristic, encoding, determinization, deterministic_planner, epsilon, discount_factor,
 			time_threshold, trials_number, trials_max_depth, probabilistic_threshold, nb_of_particles, trajectories_max_depth, goals_limit,
 			deterministic_probability_weight, deterministic_reward_weight, deterministic_planner_timeout, deterministic_planner_max_trials,
 			proportion_updated_states, minimum_mean, maximum_variance, cgs_flag);
 		break;
 
 	case TEST_PLANNER_ANYTIME :
-		p = new AnytimeTestPlanner(pb, algorithm, heuristic, encoding, determinization, deterministic_planner, epsilon, discount_factor,
+		p = new SimulationTestAnytimePlanner(pb, algorithm, heuristic, encoding, determinization, deterministic_planner, epsilon, discount_factor,
 			time_threshold, trials_number, trials_max_depth, probabilistic_threshold, nb_of_particles, trajectories_max_depth, goals_limit,
 			deterministic_probability_weight, deterministic_reward_weight, deterministic_planner_timeout, deterministic_planner_max_trials,
 			proportion_updated_states, minimum_mean, maximum_variance, cgs_flag);
 		break;
 	}
 
-	TestPlanner::SimulationInfo siminfo = p->launch();
+	SimulationTestPlanner::SimulationInfo siminfo = p->launch();
 	std::cerr << "      total solving time: " << (p->get_solving_time() / 1000.0) << " seconds" << std::endl;
 	std::cerr << "      per-trial solving time: " << (siminfo.average_time_per_trial_ / 1000.0) << " seconds" << std::endl;
 	std::cerr << "      value: " << siminfo.average_cumulated_value_ << std::endl;

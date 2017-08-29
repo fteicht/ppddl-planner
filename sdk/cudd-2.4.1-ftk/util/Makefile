@@ -2,10 +2,11 @@
 #
 # util -- miscellaneous utility routines
 #---------------------------------------------------------------------------
-.SUFFIXES: .c .o .u
+.SUFFIXES: .c .lo .o .u
 
 CC	= gcc
 RANLIB	= ranlib
+LIBTOOL	= libtool
 
 FLAGS	= -DUNIX
 MFLAG   =
@@ -22,11 +23,18 @@ PSRC	= cpu_time.c cpu_stats.c getopt.c safe_mem.c strsav.c texpand.c \
 	  ptime.c prtime.c pipefork.c pathsearch.c stub.c \
 	  tmpfile.c datalimit.c
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PUBJ	= $(PSRC:.c=.u)
 PHDR	= util.h
 
 WHERE	= ..
 INCLUDE = $(WHERE)/include
+
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
+.c.lo: $(PHDR)
+	$(LIBTOOL) --mode=compile $(CC) -c -I$(INCLUDE) $(FLAGS) $(CFLAGS) $<
 
 lib$(P).a: $(POBJ)
 	ar rv $@ $?
@@ -46,6 +54,7 @@ lib$(P).b: $(PUBJ)
 
 # if the header files change, recompile
 $(POBJ): $(PHDR)
+$(PLOBJ): $(PHDR)
 $(PUBJ): $(PHDR)
 
 lint: llib-l$(P).ln
@@ -56,10 +65,10 @@ llib-l$(P).ln: $(PSRC) $(PHDR)
 tags: $(PSRC) $(PHDR)
 	ctags $(PSRC) $(PHDR)
 
-all: lib$(P).a lib$(P).b llib-l$(P).ln tags
+all: lib$(P).la lib$(P).b llib-l$(P).ln tags
 
 clean:
-	rm -f *.o *.u core *.warnings
+	rm -f *.o *.lo *.u core *.warnings
 
 distclean: clean
-	rm -f lib$(P).a lib$(P).b llib-l$(P).ln tags *.bak *~ .pure
+	rm -rf .libs lib$(P).a lib$(P).la lib$(P).b llib-l$(P).ln tags *.bak *~ .pure

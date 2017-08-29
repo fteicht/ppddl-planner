@@ -2,10 +2,11 @@
 #
 # epd -- extended precision
 #---------------------------------------------------------------------------
-.SUFFIXES: .c .o .u
+.SUFFIXES: .c .lo .o .u
 
 CC	= gcc
 RANLIB	= ranlib
+LIBTOOL	= libtool
 
 MFLAG	=
 ICFLAGS = -g -O6 -Wall
@@ -20,12 +21,19 @@ P	= epd
 PSRC	= epd.c
 PHDR	= epd.h
 POBJ	= $(PSRC:.c=.o)
+PLOBJ	= $(PSRC:.c=.lo)
 PUBJ	= $(PSRC:.c=.u)
 
 WHERE	= ..
 INCLUDE = $(WHERE)/include
 
 #---------------------------
+
+lib$(P).la: $(PLOBJ)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $?
+
+.c.lo: $(PSRC) $(PHDR)
+	$(LIBTOOL) --mode=compile $(CC) -c -I$(INCLUDE) $(CFLAGS) $<
 
 lib$(P).a: $(POBJ)
 	ar rv $@ $?
@@ -45,6 +53,7 @@ lib$(P).b: $(PUBJ)
 
 # if the header files change, recompile
 $(POBJ): $(PHDR)
+$(PLOBJ): $(PHDR)
 $(PUBJ): $(PHDR)
 
 lint: llib-l$(P).ln
@@ -55,10 +64,10 @@ llib-l$(P).ln: $(PSRC) $(PHDR)
 tags: $(PSRC) $(PHDR)
 	ctags $(PSRC) $(PHDR)
 
-all: lib$(P).a lib$(P).b llib-l$(P).ln tags
+all: lib$(P).la lib$(P).b llib-l$(P).ln tags
 
 clean:
-	rm -f *.o *.u .pure *.warnings
+	rm -f *.o *.lo *.u .pure *.warnings
 
 distclean: clean
-	rm -f lib*.a lib$(P).b llib-l$(P).ln tags *~ *.bak *.qv *.qx
+	rm -rf .libs lib*.a lib*.la lib$(P).b llib-l$(P).ln tags *~ *.bak *.qv *.qx

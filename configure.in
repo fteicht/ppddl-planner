@@ -16,7 +16,9 @@ AC_SUBST(ISODATE)
 AC_PROG_RANLIB
 AC_CANONICAL_HOST
 
-AC_DEFINE(PACKAGE_BUGREPORT, "florent.teichteil@onera.fr", [bug report e-mail])
+AC_DEFINE(PACKAGE_BUGREPORT, "florent.teichteil@gmail.com", [bug report e-mail])
+
+LT_INIT
 
 #CXXFLAGS=""
 #AC_SUBST(CXXFLAGS)
@@ -56,11 +58,13 @@ AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ(getopt) AC_LIBOBJ(getopt1)])
 ##################################################
 #dnl Check for boost.
 
-#AX_BOOST_BASE
-#AX_BOOST_PROGRAM_OPTIONS
-#CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-#LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
-#LIBS="$LIBS $BOOST_PROGRAM_OPTIONS_LIB"
+AX_BOOST_BASE
+AX_PYTHON_DEVEL
+AX_BOOST_PYTHON
+AC_SUBST(BOOST_CPPFLAGS)
+AC_SUBST(BOOST_LDFLAGS)
+AC_SUBST(BOOST_PYTHON_LIB)
+AM_CONDITIONAL([BOOSTPYTHON], [test "$ac_cv_boost_python" = "yes"])
 
 
 ##################################################
@@ -75,10 +79,10 @@ AC_ARG_WITH(cudd-prefix,
 CUDD_CPPFLAGS="-I$with_cudd_prefix/include"
 CPPFLAGS="$CPPFLAGS $CUDD_CPPFLAGS"
 
-CUDD_LDFLAGS="$with_cudd_prefix/cudd/libcudd.a $with_cudd_prefix/util/libutil.a $with_cudd_prefix/mtr/libmtr.a $with_cudd_prefix/st/libst.a $with_cudd_prefix/dddmp/libdddmp.a $with_cudd_prefix/epd/libepd.a"
+CUDD_LDFLAGS="$with_cudd_prefix/cudd/libcudd.la $with_cudd_prefix/util/libutil.la $with_cudd_prefix/mtr/libmtr.la $with_cudd_prefix/st/libst.la $with_cudd_prefix/dddmp/libdddmp.la $with_cudd_prefix/epd/libepd.la"
 
 AC_CHECK_HEADER([cudd.h], , [AC_MSG_ERROR([Cannot find cudd headers: install CUDD from ftp://vlsi.colorado.edu/pub/cudd-2.4.1.tar.gz])])
-AC_CHECK_FILE($with_cudd_prefix/cudd/libcudd.a, , [AC_MSG_ERROR([Cannot find cudd library: compile CUDD before running configure])])
+AC_CHECK_FILE($with_cudd_prefix/cudd/libcudd.la, , [AC_MSG_ERROR([Cannot find cudd library: compile CUDD before running configure])])
 
 AC_SUBST(CUDD_CPPFLAGS)
 AC_SUBST(CUDD_LDFLAGS)

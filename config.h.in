@@ -6,6 +6,15 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* define if the Boost library is available */
+#undef HAVE_BOOST
+
+/* define if the Boost::Python library is available */
+#undef HAVE_BOOST_PYTHON
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
 /* Define to 1 if you have the `gethostbyname' function. */
 #undef HAVE_GETHOSTBYNAME
 
@@ -29,6 +38,9 @@
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
+
+/* If available, contains the Python version number currently in use. */
+#undef HAVE_PYTHON
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
@@ -77,6 +89,9 @@
 
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#undef LT_OBJDIR
 
 /* Turn on memory relaxed heuristics mode */
 #undef MEMORY_RELAXED_HEURISTICS

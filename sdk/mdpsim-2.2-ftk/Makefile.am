@@ -55,10 +55,12 @@ libmdpsim_la_SOURCES = \
 	states.cc\
 	parser.yy\
 	tokenizer.ll
+libmdpsim_la_CPPFLAGS = -fPIC
 
 EXTRA_LTLIBRARIES = libmdpsimmtbdd.la
 
 libmdpsimmtbdd_la_SOURCES = mtbdd.cc	mtbdd.h
+libmdpsimmtbdd_la_CPPFLAGS = -fPIC
 
 bin_PROGRAMS = mdpsim mdpclient
 EXTRA_PROGRAMS = mtbddclient
