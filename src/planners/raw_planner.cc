@@ -48,9 +48,7 @@ RawPlanner::RawPlanner(const Problem& problem, algorithm_t alg, heuristic_t heur
     solving_time_(0), resolving_time_(0), nb_of_replannings_(0),
 	compute_goal_statistics_(compute_goal_statistics), goal_statistics_algorithm_(goal_statistics_algorithm)
 {
-	time_threshold_ = time_threshold;
-    warning_level = warn_level;
-    verbosity = verb_level;
+	initialize(time_threshold, warn_level, verb_level);
 }
 
 
@@ -70,19 +68,33 @@ try : BasePlanner(*parse_domain_and_problem(domain, problem).second, alg, heur, 
     solving_time_(0), resolving_time_(0), nb_of_replannings_(0),
 	compute_goal_statistics_(compute_goal_statistics), goal_statistics_algorithm_(goal_statistics_algorithm)
 {
-	time_threshold_ = time_threshold;
-    warning_level = warn_level;
-    verbosity = verb_level;
+	initialize(time_threshold, warn_level, verb_level);
 }
 catch(const BaseException& e)
 {
-    
+    std::cerr << "Unable to construct the planner! " << e.what() << std::endl;
 }
 
 
 RawPlanner::~RawPlanner()
 {
 }
+
+
+void RawPlanner::initialize(long time_threshold, int warn_level, int verb_level)
+{
+    time_threshold_ = time_threshold;
+    warning_level = warn_level;
+    verbosity = verb_level;
+}
+
+
+#ifdef HAVE_BOOST_PYTHON
+boost::python::object RawPlannerInit(boost::python::tuple args, boost::python::dict kwargs)
+{
+    
+}
+#endif
 
 
 std::pair<const Domain*, const Problem*> RawPlanner::parse_domain_and_problem(const std::string& domain, const std::string& problem)
@@ -110,6 +122,9 @@ std::pair<const Domain*, const Problem*> RawPlanner::parse_domain_and_problem(co
     
     domain_ = Domain::begin()->second;
     
+    if (verbosity > 1)
+        std::cout << "DOMAIN:" << std::endl << *domain_ << std::endl;
+    
     // PROBLEM
     
     yyin = fopen(problem.c_str(), "r");
@@ -129,6 +144,9 @@ std::pair<const Domain*, const Problem*> RawPlanner::parse_domain_and_problem(co
     problem_ = Problem::begin()->second;
     current_problem_hack_ = problem_;
     
+    if (verbosity > 1)
+        std::cout << "PROBLEM:" << std::endl << *problem_ << std::endl;
+    
     // RETURN
     
     return std::make_pair(domain_, problem_);
@@ -144,7 +162,7 @@ const Action& RawPlanner::action(const PddlState& st)
 	}
 	catch (TimeoutException& error)
 	{
-		error.push_function_backtrace("TestPlanner::action");
+		error.push_function_backtrace("RawPlanner::action");
 		throw;
 	}
 	catch (const BaseException& error)
@@ -223,7 +241,7 @@ double RawPlanner::value(const PddlState& st)
 	}
 	catch (TimeoutException& error)
 	{
-		error.push_function_backtrace("TestPlanner::value");
+		error.push_function_backtrace("RawPlanner::value");
 		throw;
 	}
 	catch (const BaseException& error)
@@ -303,8 +321,10 @@ void RawPlanner::check_solve(const PddlState& st)
 		while ((get_time_milli() - resolving_time_begin) <= time_threshold_)
 		{
 			if (!ram_available())
+            {
                 std::cout << "Giving up by lack of sufficient RAM!" << std::endl;
 				break;
+            }
 
 			algorithm_->solve_progress();
 
@@ -316,7 +336,7 @@ void RawPlanner::check_solve(const PddlState& st)
 		}
 
 		if (!alg_converged)
-			throw TimeoutException("algorithm has not yet converged", "CompleteTestPlanner::check_solve");
+			throw TimeoutException("algorithm has not yet converged", "RawPlanner::check_solve");
 
 		resolving_time_ = (get_time_milli() - resolving_time_begin);
 		solving_time_ += resolving_time_;
@@ -495,5 +515,140 @@ void RawPlanner::encode_action(const Action& action, boost::python::dict& result
     }
     
     result[boost::python::str("terms")] = terms;
+}
+#endif
+
+
+#ifdef HAVE_BOOST_PYTHON
+boost::python::str (RawPlanner::*action_str)(const boost::python::str&) = &RawPlanner::action;
+boost::python::dict (RawPlanner::*action_dict)(const boost::python::dict&) = &RawPlanner::action;
+double (RawPlanner::*value_str)(const boost::python::str&) = &RawPlanner::value;
+double (RawPlanner::*value_dict)(const boost::python::dict&) = &RawPlanner::value;
+boost::python::object RawPlannerInit(boost::python::tuple args, boost::python::dict kwargs);
+    
+BOOST_PYTHON_MODULE(libppddl_planner)
+{
+    boost::python::enum_<algorithm_t>("algorithm")
+                                          .value("vi", ALGORITHM_VI)
+                                          .value("fsp", ALGORITHM_FSP)
+                                          .value("fsp-star", ALGORITHM_FSP_STAR)
+                                          .value("trfsp_star", ALGORITHM_TRFSP_STAR)
+                                          .value("bfdt", ALGORITHM_BFDT)
+                                          .value("psp_star", ALGORITHM_PSP_STAR)
+                                          .value("fdp", ALGORITHM_FDP)
+                                          .value("lao", ALGORITHM_LAO)
+                                          .value("ilao", ALGORITHM_IMPROVED_LAO)
+                                          .value("rtdp", ALGORITHM_RTDP)
+                                          .value("lrtdp", ALGORITHM_LRTDP)
+                                          .value("ldfs", ALGORITHM_LDFS)
+                                          .value("od", ALGORITHM_OD)
+                                          .value("rdpg", ALGORITHM_RDPG)
+                                          .value("rdrg", ALGORITHM_RDRG)
+                                          .value("rdbg", ALGORITHM_RDBG)
+                                          .value("rdrd", ALGORITHM_RDRD)
+                                          .value("rdro", ALGORITHM_RDRO)
+                                          .value("rdrd_star", ALGORITHM_RDRD_STAR)
+                                          .value("rdro_star", ALGORITHM_RDRO_STAR)
+                                          .value("gco", ALGORITHM_GCO)
+                                          .value("gce", ALGORITHM_GCE)
+                                          .value("mvpfpi", ALGORITHM_MVPFPI)
+                                          .value("mvhopi", ALGORITHM_MVHOPI)
+                                          .value("mvpfas", ALGORITHM_MVPFAS)
+                                          .value("mvhoas", ALGORITHM_MVHOAS)
+                                          .value("mvpfssp", ALGORITHM_MVPFSSP);
+    boost::python::enum_<heuristic_t>("heuristic")
+                                          .value("zero", HEURISTIC_ZERO)
+                                          .value("pddl_step_distance", HEURISTIC_PDDL_STEP_DISTANCE)
+                                          .value("native_step_distance", HEURISTIC_NATIVE_STEP_DISTANCE)
+                                          .value("relaxed_step_distance", HEURISTIC_RELAXED_STEP_DISTANCE)
+                                          .value("relaxed_rewards", HEURISTIC_RELAXED_REWARDS)
+                                          .value("relaxed_planning_graph", HEURISTIC_RELAXED_PLANNING_GRAPH)
+                                          .value("bounds", HEURISTIC_BOUNDS)
+                                          .value("hadd", HEURISTIC_HADD)
+                                          .value("hmax", HEURISTIC_HMAX)
+                                          .value("hdet", HEURISTIC_HDET);
+    boost::python::enum_<encoding_t>("encoding")
+                                         .value("graph", ENCODING_GRAPH)
+                                         .value("symbolic", ENCODING_SYMBOLIC);
+    boost::python::enum_<determinization_t>("determinization")
+                                                .value("most_probable_outcome_goal", DETERMINIZATION_MOST_PROBABLE_OUTCOME_GOAL)
+                                                .value("most_probable_outcome_reward", DETERMINIZATION_MOST_PROBABLE_OUTCOME_REWARD)
+                                                .value("all_outcomes_goal", DETERMINIZATION_ALL_OUTCOMES_GOAL)
+                                                .value("all_outcomes_reward", DETERMINIZATION_ALL_OUTCOMES_REWARD);
+    boost::python::enum_<deterministic_planner_t>("deterministic_planner")
+                                                      .value("ff", DETERMINISTIC_PLANNER_FF)
+                                                      .value("mff", DETERMINISTIC_PLANNER_MFF);
+    boost::python::class_<ParameterRawPlanner>("Planner", boost::python::no_init )
+                                                   .def("__init__", boost::python::raw_function(RawPlannerInit), "Planner constructor")
+                                                   .def("action", action_str, (boost::python::arg("state")))
+                                                   .def("action", action_dict, (boost::python::arg("state")))
+                                                   .def("value", value_str, (boost::python::arg("state")))
+                                                   .def("value", value_dict, (boost::python::arg("state")))
+                                                   .def("get_resolving_time", &RawPlanner::get_resolving_time)
+                                                   .def("get_solving_time", &RawPlanner::get_solving_time)
+                                                   .def("get_nb_of_replannings", &RawPlanner::get_nb_of_replannings)
+                                                   .def(boost::parameter::python::init<boost::mpl::vector<
+                                                       tag::domain(std::string),
+                                                       tag::problem(std::string),
+                                                       tag::algorithm(algorithm_t),
+                                                       tag::heuristic(heuristic_t),
+                                                       tag::encoding(encoding_t),
+                                                       tag::determinization(determinization_t),
+                                                       tag::deterministic_planner(deterministic_planner_t),
+                                                       tag::epsilon*(double),
+                                                       tag::discount_factor*(double),
+                                                       tag::time_threshold*(long),
+                                                       tag::probabilistic_threshold*(double),
+                                                       tag::nb_of_particles*(unsigned int),
+                                                       tag::trajectories_max_depth*(unsigned int),
+                                                       tag::goals_limit*(unsigned int),
+                                                       tag::deterministic_probability_weight*(double),
+                                                       tag::deterministic_reward_weight*(double),
+                                                       tag::deterministic_planner_timeout*(unsigned int),
+                                                       tag::deterministic_planner_max_trials*(unsigned int),
+                                                       tag::proportion_updated_states*(double),//> >());/*,
+                                                       tag::minimum_mean*(double),
+                                                       tag::maximum_variance*(double),
+                                                       tag::compute_goal_statistics*(bool),
+                                                       tag::goal_statistics_algorithm*(algorithm_t),
+                                                       tag::warning_level*(int),
+                                                       tag::verbosity_level*(int)> >());
+                                          
+                                          /*const std::string&, const std::string&, // C++ constructor, shadowed by raw constructor
+                                                              algorithm_t, heuristic_t, encoding_t,
+			                                                  determinization_t, deterministic_planner_t,
+			                                                  boost::python::optional<double, double, long,
+			                                                  double, unsigned int,
+                                                              unsigned int, unsigned int,
+                                                              double, double,
+                                                              unsigned int, unsigned int,
+			                                                  double, double, double,
+                                                              bool, algorithm_t,
+                                                              int, int> >((
+                                                                 boost::python::arg("domain"),
+                                                                 boost::python::arg("problem"),
+                                                                 boost::python::arg("algorithm"),
+                                                                 boost::python::arg("heuristic"),
+                                                                 boost::python::arg("encoding"),
+                                                                 boost::python::arg("determinization"),
+                                                                 boost::python::arg("deterministic_planner"),
+                                                                 boost::python::arg("epsilon"),
+                                                                 boost::python::arg("discount_factor"),
+                                                                 boost::python::arg("time_threshold"),
+                                                                 boost::python::arg("probabilistic_threshold"),
+                                                                 boost::python::arg("nb_of_particles"),
+                                                                 boost::python::arg("trajectories_max_depth"),
+                                                                 boost::python::arg("goals_limit"),
+                                                                 boost::python::arg("deterministic_probability_weight"),
+                                                                 boost::python::arg("deterministic_reward_weight"),
+                                                                 boost::python::arg("deterministic_planner_timeout"),
+                                                                 boost::python::arg("deterministic_planner_max_trials"),
+                                                                 boost::python::arg("proportion_updated_states"),
+                                                                 boost::python::arg("minimum_mean"),
+                                                                 boost::python::arg("maximum_variance"),
+                                                                 boost::python::arg("compute_goal_statistics"),
+                                                                 boost::python::arg("goal_statistics_algorithm"),
+                                                                 boost::python::arg("warning_level"),
+                                                                 boost::python::arg("verbosity_level"))));*/
 }
 #endif
