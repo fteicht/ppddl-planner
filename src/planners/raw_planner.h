@@ -91,6 +91,8 @@ private :
     #ifdef HAVE_BOOST_PYTHON
     /** Get a PPDDL state from a python dictionary */
     void decode_state(const boost::python::dict& state, AtomSet& atoms, ValueMap& values);
+    void encode_state(const AtomSet& atoms, const ValueMap& values, boost::python::dict& result);
+    void decode_action(const boost::python::dict& action, const Action*& result);
     void encode_action(const Action& action, boost::python::dict& result);
     #endif
 
@@ -161,13 +163,19 @@ public :
     double value(const boost::python::dict& st);
     #endif
     
+    /* Samples an initial state */
+    void init(PddlState& state, bool& goal);
+    #ifdef HAVE_BOOST_PYTHON
+    boost::python::tuple init();
+    #endif
+    
     /* Samples a next state when applying an action in a given state */
-	//void next(const PddlState& income, const Action& action, PddlState& outcome, double& reward, bool& goal);
+	void next(const PddlState& income, const Action& action, PddlState& outcome, double& reward, bool& goal);
     //void next(const std::string& income, const std::string& action, std::string& outcome, double& reward, bool& goal); /* XML string as in the MDPsim convention */
-    //#ifdef HAVE_BOOST_PYTHON
+    #ifdef HAVE_BOOST_PYTHON
     //boost::python::tuple next(const boost::python::str& income, const boost::python::str& action); /* XML string as in the MDPsim convention */
-    //boost::python::tuple value(const boost::python::dict& income, const boost::python::dict& action);
-    //#endif
+    boost::python::tuple next(const boost::python::dict& income, const boost::python::dict& action);
+    #endif
     
     /* Returns the (last) resolving time */
     inline long get_resolving_time() const {return resolving_time_;}

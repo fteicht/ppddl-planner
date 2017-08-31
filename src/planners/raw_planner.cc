@@ -165,8 +165,9 @@ const Action& RawPlanner::action(const PddlState& st)
 		error.push_function_backtrace("RawPlanner::action");
 		throw;
 	}
-	catch (const BaseException& error)
+	catch (BaseException& error)
 	{
+        error.push_function_backtrace("RawPlanner::action");
 		throw;
 	}
 }
@@ -185,8 +186,9 @@ std::string RawPlanner::action(const std::string& st)
         XMLClient::sendAction(oss, &action(sst));
         return oss.str();
     }
-    catch (const BaseException& error)
+    catch (BaseException& e)
     {
+        e.push_function_backtrace("RawPlanner::action");
         throw;
     }
 }
@@ -199,8 +201,9 @@ boost::python::str RawPlanner::action(const boost::python::str& st)
     {
         return boost::python::str(action(std::string(boost::python::extract<std::string>(st))));
     }
-    catch (const BaseException& error)
+    catch (BaseException& e)
     {
+        e.push_function_backtrace("RawPlanner::action");
         throw;
     }
 }
@@ -224,8 +227,9 @@ boost::python::dict RawPlanner::action(const boost::python::dict& st)
     {
         throw BaseException("The state dictionary is ill-formed (check the type of objects)", "RawPlanner::action");
     }
-    catch (const BaseException& e)
+    catch (BaseException& e)
     {
+        e.push_function_backtrace("RawPlanner::action");
         throw;
     }
 }
@@ -244,8 +248,9 @@ double RawPlanner::value(const PddlState& st)
 		error.push_function_backtrace("RawPlanner::value");
 		throw;
 	}
-	catch (const BaseException& error)
+	catch (BaseException& error)
 	{
+        error.push_function_backtrace("RawPlanner::value");
 		throw;
 	}
 }
@@ -262,8 +267,9 @@ double RawPlanner::value(const std::string& st)
         PddlState sst(atoms, values);
         return value(sst);
     }
-    catch (const BaseException& error)
+    catch (BaseException& error)
     {
+        error.push_function_backtrace("RawPlanner::value");
         throw;
     }
 }
@@ -276,8 +282,9 @@ double RawPlanner::value(const boost::python::str& st)
     {
         return value(std::string(boost::python::extract<std::string>(st)));
     }
-    catch (const BaseException& error)
+    catch (BaseException& error)
     {
+        error.push_function_backtrace("RawPlanner::value");
         throw;
     }
 }
@@ -299,8 +306,124 @@ double RawPlanner::value(const boost::python::dict& st)
     {
         throw BaseException("The state dictionary is ill-formed (check the type of objects)", "RawPlanner::action");
     }
-    catch (const BaseException& e)
+    catch (BaseException& e)
     {
+        e.push_function_backtrace("RawPlanner::value");
+        throw;
+    }
+}
+#endif
+
+
+void RawPlanner::init(PddlState& state, bool& goal)
+{
+    try
+    {
+        state._atoms_() = problem_->init_atoms();
+        state._values_() = problem_->init_values();
+        
+        for (EffectList::const_iterator ei = problem_->init_effects().begin(); ei != problem_->init_effects().end(); ei++)
+        {
+            AtomList adds;
+            AtomList deletes;
+            UpdateList updates;
+            (*ei)->state_change(adds, deletes, updates, problem_->terms(), state.atoms(), state.values());
+            state._atoms_().insert(adds.begin(), adds.end());
+            
+            for (UpdateList::const_iterator ui = updates.begin(); ui != updates.end(); ui++)
+            {
+                (*ui)->affect(state._values_());
+            }
+        }
+        
+        goal = problem_->goal().holds(problem_->terms(), state.atoms(), state.values());
+        
+        if (goal)
+        {
+            const Fluent& goal_achieved_fluent = Fluent::make(domain_->goal_achieved(), TermList());
+            state._values_()[&goal_achieved_fluent] = 1;
+            
+            if (problem_->goal_reward() != 0)
+            {
+                problem_->goal_reward()->affect(state._values_());
+            }
+        }
+    }
+    catch (BaseException& error)
+    {
+        error.push_function_backtrace("RawPlanner::init");
+        throw;
+    }
+}
+
+
+#ifdef HAVE_BOOST_PYTHON
+boost::python::tuple RawPlanner::init()
+{
+    try
+    {
+        PddlState initst;
+        bool goal;
+        init(initst, goal);
+        boost::python::dict st;
+        encode_state(initst.atoms(), initst.values(), st);
+        return boost::python::make_tuple(st, goal);
+    }
+    catch (BaseException& error)
+    {
+        error.push_function_backtrace("RawPlanner::init");
+        throw;
+    }
+}
+#endif
+
+
+void RawPlanner::next(const PddlState& income, const Action& action, PddlState& outcome, double& reward, bool& goal)
+{
+    try
+    {
+        algorithm_->get_transitions_blackbox().random_transition(income, action, outcome, reward, goal);
+    }
+    catch (BaseException& e)
+    {
+        e.push_function_backtrace("RawPlanner::next");
+        throw;
+    }
+}
+
+
+/*void RawPlanner::next(const std::string& income, const std::string& action, std::string& outcome, double& reward, bool& goal)
+{
+    AtomSet atoms;
+    ValueMap values;
+    XMLText xmlst(income);
+    XMLClient::getState(atoms, values, *problem_, &xmlst);
+    PddlState inst(atoms, values);
+}*/
+
+
+#ifdef HAVE_BOOST_PYTHON
+boost::python::tuple RawPlanner::next(const boost::python::dict& income, const boost::python::dict& action)
+{
+    try
+    {
+        AtomSet atoms;
+        ValueMap values;
+        decode_state(income, atoms, values);
+        PddlState inst(atoms, values);
+        const Action* act;
+        decode_action(action, act);
+        PddlState outst;
+        double reward;
+        bool goal;
+        next(inst, *act, outst, reward, goal);
+        boost::python::dict outcome;
+        encode_state(outst.atoms(), outst.values(), outcome);
+        return boost::python::make_tuple(outcome, reward, goal);
+    }
+    catch (BaseException& e)
+    {
+        e.push_function_backtrace("RawPlanner::next");
         throw;
     }
 }
@@ -361,7 +484,7 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
     // ATOMS
     
     if (!state.has_key("atoms"))
-        throw BaseException("State has no 'atoms' key", "RawPlanner::get_state");
+        throw BaseException("State has no 'atoms' key", "RawPlanner::decode_state");
         
     boost::python::list al = boost::python::extract<boost::python::list>(state.get("atoms"));
     
@@ -370,17 +493,21 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
         boost::python::dict atom = *i;
         
         if (!atom.has_key("predicate"))
-            throw BaseException ("State atom has no 'predicate' key", "RawPlanner::get_state");
+            throw BaseException ("State atom has no 'predicate' key", "RawPlanner::decode_state");
         
         boost::python::str predicate = boost::python::extract<boost::python::str>(atom.get("predicate"));
         const Predicate* p = domain_->predicates().find_predicate(boost::python::extract<std::string>(predicate));
+        
         if (!p)
-            throw BaseException(std::string("State predicate ") + std::string(boost::python::extract<std::string>(predicate)) + " is unknown to the domain", "RawPlanner::get_state");
+            throw BaseException(std::string("State predicate ") + std::string(boost::python::extract<std::string>(predicate)) + " is unknown to the domain", "RawPlanner::decode_state");
+        
+        if (!atom.has_key("terms"))
+            throw BaseException ("State atom has no 'terms' key", "RawPlanner::decode_state");
         
         boost::python::list terms = boost::python::extract<boost::python::list>(atom.get("terms"));
         
         if (boost::python::len(terms) != PredicateTable::parameters(*p).size())
-            throw BaseException(std::string("State predicate ") + std::string(boost::python::extract<std::string>(predicate)) + "has not the correct number of parameters", "RawPlanner::get_state");
+            throw BaseException(std::string("State predicate ") + std::string(boost::python::extract<std::string>(predicate)) + "has not the correct number of parameters", "RawPlanner::decode_state");
         
         TermList t;
         size_t argIndex = 0;
@@ -397,7 +524,7 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state predicate " << std::string(boost::python::extract<std::string>(predicate)) << " is of incorrect type";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
             }
             else
@@ -408,13 +535,13 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state predicate " << std::string(boost::python::extract<std::string>(predicate)) << " is unknown to the domain nor the problem";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
                 if (!TypeTable::subtype(TermTable::type(*o), correctType))
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state predicate " << std::string(boost::python::extract<std::string>(predicate)) << " is of incorrect type";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
             }
             
@@ -429,10 +556,9 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
     // FLUENTS
     
     if (!state.has_key("fluents"))
-        throw BaseException("State has no 'fluents' key", "RawPlanner::get_state");
+        throw BaseException("State has no 'fluents' key", "RawPlanner::decode_state");
         
     boost::python::list fl = boost::python::extract<boost::python::list>(state.get("fluents"));
-    
     
     for (boost::python::stl_input_iterator<boost::python::tuple> i(fl); i != boost::python::stl_input_iterator<boost::python::tuple>(); i++)
     {
@@ -441,17 +567,21 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
         double fv = boost::python::extract<double>(fluent[1]);
         
         if (!fd.has_key("function"))
-            throw BaseException ("State fluent has no 'function' key", "RawPlanner::get_state");
+            throw BaseException ("State fluent has no 'function' key", "RawPlanner::decode_state");
         
         boost::python::str function = boost::python::extract<boost::python::str>(fd.get("function"));
         const Function* f = domain_->functions().find_function(boost::python::extract<std::string>(function));
+        
         if (!f)
-            throw BaseException(std::string("State function ") + std::string(boost::python::extract<std::string>(function)) + " is unknown to the domain", "RawPlanner::get_state");
+            throw BaseException(std::string("State function ") + std::string(boost::python::extract<std::string>(function)) + " is unknown to the domain", "RawPlanner::decode_state");
+        
+        if (!fd.has_key("terms"))
+            throw BaseException ("State fluent has no 'terms' key", "RawPlanner::decode_state");
         
         boost::python::list terms = boost::python::extract<boost::python::list>(fd.get("terms"));
         
         if (boost::python::len(terms) != FunctionTable::parameters(*f).size())
-            throw BaseException(std::string("State function ") + std::string(boost::python::extract<std::string>(function)) + "has not the correct number of parameters", "RawPlanner::get_state");
+            throw BaseException(std::string("State function ") + std::string(boost::python::extract<std::string>(function)) + "has not the correct number of parameters", "RawPlanner::decode_state");
         
         TermList t;
         size_t argIndex = 0;
@@ -468,7 +598,7 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state function " << std::string(boost::python::extract<std::string>(function)) << " is of incorrect type";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
             }
             else
@@ -479,13 +609,13 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state function " << std::string(boost::python::extract<std::string>(function)) << " is unknown to the domain nor the problem";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
                 if (!TypeTable::subtype(TermTable::type(*o), correctType))
                 {
                     std::ostringstream oss;
                     oss << "Parameter " << argIndex << " of state function " << std::string(boost::python::extract<std::string>(function)) << " is of incorrect type";
-                    throw BaseException(oss.str(), "RawPlanner::get_state");
+                    throw BaseException(oss.str(), "RawPlanner::decode_state");
                 }
             }
             
@@ -496,6 +626,135 @@ void RawPlanner::decode_state(const boost::python::dict& state, AtomSet& atoms, 
         RCObject::ref(ff);
         values.insert(std::make_pair(ff, fv));
     }
+}
+#endif
+
+
+#ifdef HAVE_BOOST_PYTHON
+void RawPlanner::encode_state(const AtomSet& atoms, const ValueMap& values, boost::python::dict& result)
+{
+    result = boost::python::dict();
+    boost::python::list atom_list;
+    
+    for (AtomSet::const_iterator a = atoms.begin() ; a != atoms.end() ; ++a)
+    {
+        boost::python::dict atom_dict;
+        atom_dict[boost::python::str("predicate")] = boost::python::str(domain_->predicates().name((*a)->predicate()));
+        boost::python::list term_list;
+        
+        for (TermList::const_iterator t = (*a)->terms().begin() ; t != (*a)->terms().end() ; ++t)
+        {
+            std::ostringstream oss;
+            oss << (*t);
+            
+            if (!(t->object()))
+                throw BaseException(std::string("Atom term ") + oss.str() + " is not an object", "RawPlanner::encode_state");
+            
+            
+            term_list.append(boost::python::str(oss.str()));
+        }
+        
+        atom_dict[boost::python::str("terms")] = term_list;
+        atom_list.append(atom_dict);
+    }
+    
+    result[boost::python::str("atoms")] = atom_list;
+    boost::python::list fluent_list;
+    
+    for (ValueMap::const_iterator f = values.begin() ; f != values.end() ; ++f)
+    {
+        boost::python::dict fluent_dict;
+        fluent_dict[boost::python::str("function")] = boost::python::str(domain_->functions().name(f->first->function()));
+        boost::python::list term_list;
+        
+        for (TermList::const_iterator t = f->first->terms().begin() ; t != f->first->terms().end() ; ++t)
+        {
+            std::ostringstream oss;
+            oss << (*t);
+            
+            if (!(t->object()))
+                throw BaseException(std::string("Fluent term ") + oss.str() + " is not an object", "RawPlanner::encode_state");
+            
+            
+            term_list.append(boost::python::str(oss.str()));
+        }
+        
+        fluent_dict[boost::python::str("terms")] = term_list;
+        boost::python::tuple fluent_tuple = boost::python::make_tuple(fluent_dict, f->second.double_value());
+        fluent_list.append(fluent_tuple);
+    }
+    
+    result[boost::python::str("fluents")] = fluent_list;
+}
+#endif
+
+
+#ifdef HAVE_BOOST_PYTHON
+void RawPlanner::decode_action(const boost::python::dict& action, const Action*& result)
+{
+    if (!action.has_key("name"))
+        throw BaseException("Action has no 'name' key", "RawPlanner::decode_action");
+        
+    boost::python::str name = boost::python::extract<boost::python::str>(action.get("name"));
+    const ActionSchema* as = domain_->find_action(boost::python::extract<std::string>(name));
+    
+    if (!as)
+        throw BaseException(std::string("action ") + std::string(boost::python::extract<std::string>(name)) + " is unknown to the domain", "RawPlanner::decode_action");
+    
+    if (!action.has_key("terms"))
+        throw BaseException ("Action has no 'terms' key", "RawPlanner::decode_action");
+    
+    boost::python::list terms = boost::python::extract<boost::python::list>(action.get("terms"));
+    
+    if (boost::python::len(terms) != as->parameters().size())
+        throw BaseException(std::string("Action ") + std::string(boost::python::extract<std::string>(name)) + "has not the correct number of parameters", "RawPlanner::decode_action");
+    
+    std::string actname = boost::python::extract<std::string>(name);
+    Action act(actname);
+    size_t argIndex = 0;
+    
+    for (boost::python::stl_input_iterator<boost::python::str> j(terms); j != boost::python::stl_input_iterator<boost::python::str>(); j++)
+    {
+        Type correctType = TermTable::type(Term(as->parameters()[argIndex]));
+        argIndex++;
+        const Object* o = problem_->terms().find_object(boost::python::extract<std::string>(*j));
+        
+        if (o)
+        {
+            if (!TypeTable::subtype(TermTable::type(*o), correctType))
+            {
+                std::ostringstream oss;
+                oss << "Parameter " << argIndex << " of action " << std::string(boost::python::extract<std::string>(name)) << " is of incorrect type";
+                throw BaseException(oss.str(), "RawPlanner::decode_action");
+            }
+        }
+        else
+        {
+            o = domain_->terms().find_object(boost::python::extract<std::string>(*j));
+            
+            if (!o)
+            {
+                std::ostringstream oss;
+                oss << "Parameter " << argIndex << " of action " << std::string(boost::python::extract<std::string>(name)) << " is unknown to the domain nor the problem";
+                throw BaseException(oss.str(), "RawPlanner::decode_action");
+            }
+            if (!TypeTable::subtype(TermTable::type(*o), correctType))
+            {
+                std::ostringstream oss;
+                oss << "Parameter " << argIndex << " of action " << std::string(boost::python::extract<std::string>(name)) << " is of incorrect type";
+                throw BaseException(oss.str(), "RawPlanner::decode_action");
+            }
+        }
+        
+        act.add_argument(*o);
+    }
+    
+    ActionSet::const_iterator ai = problem_->actions().find(&act);
+    
+    if (ai == problem_->actions().end())
+        throw BaseException ("Action is unknown to the problem", "RawPlanner::decode_action");
+    
+    result = *ai;
 }
 #endif
 
@@ -524,7 +783,8 @@ boost::python::str (RawPlanner::*action_str)(const boost::python::str&) = &RawPl
 boost::python::dict (RawPlanner::*action_dict)(const boost::python::dict&) = &RawPlanner::action;
 double (RawPlanner::*value_str)(const boost::python::str&) = &RawPlanner::value;
 double (RawPlanner::*value_dict)(const boost::python::dict&) = &RawPlanner::value;
-boost::python::object RawPlannerInit(boost::python::tuple args, boost::python::dict kwargs);
+boost::python::tuple (RawPlanner::*init_dict)() = &RawPlanner::init;
+boost::python::tuple (RawPlanner::*next_dict)(const boost::python::dict&, const boost::python::dict&) = &RawPlanner::next;
     
 BOOST_PYTHON_MODULE(libppddl_planner)
 {
@@ -579,11 +839,12 @@ BOOST_PYTHON_MODULE(libppddl_planner)
                                                       .value("ff", DETERMINISTIC_PLANNER_FF)
                                                       .value("mff", DETERMINISTIC_PLANNER_MFF);
     boost::python::class_<ParameterRawPlanner>("Planner", boost::python::no_init )
-                                                   .def("__init__", boost::python::raw_function(RawPlannerInit), "Planner constructor")
                                                    .def("action", action_str, (boost::python::arg("state")))
                                                    .def("action", action_dict, (boost::python::arg("state")))
                                                    .def("value", value_str, (boost::python::arg("state")))
                                                    .def("value", value_dict, (boost::python::arg("state")))
+                                                   .def("init", init_dict)
+                                                   .def("next", next_dict, (boost::python::arg("state"), boost::python::arg("action")))
                                                    .def("get_resolving_time", &RawPlanner::get_resolving_time)
                                                    .def("get_solving_time", &RawPlanner::get_solving_time)
                                                    .def("get_nb_of_replannings", &RawPlanner::get_nb_of_replannings)
