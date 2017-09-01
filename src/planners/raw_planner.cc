@@ -24,6 +24,12 @@
 #include "algorithms/graph_gco.h"
 #include <mdpsim/client.h>
 
+#include <iostream>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+
 #ifdef HAVE_BOOST
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>

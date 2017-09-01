@@ -42,35 +42,35 @@ fi
 
 echo "Entering directory $CUDD"
 cd $CUDD
-make -j$(($numcpu - 1))
+make -j$(($numcpu + 1))
 cd ../..
 echo "Leaving directory $CUDD"
 
 echo "Entering directory $MDPSIM"
 cd $MDPSIM
 ./configure --prefix=$PWD --disable-shared --enable-static CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG"
-make -j$(($numcpu - 1))
+make -j$(($numcpu + 1))
 make install
 cd ../..
 echo "Leaving directory $MDPSIM"
 
 echo "Entering directory $FF"
 cd $FF
-make -j$(($numcpu - 1))
+make -j$(($numcpu + 1))
 cd ../..
 echo "Leaving directory $FF"
 
 echo "Entering directory $MFF"
 cd $MFF
-make -j$(($numcpu - 1))
+make -j$(($numcpu + 1))
 cd ../..
 echo "Leaving directory $MFF"
 
 echo "Compiling ppddl-planner"
-echo -e "\e[31mEnter the python version for which you want to compile the python wrapper (ignored if no python nor Boost.Python versions found on your system):\e[0m"
+echo -e "\e[31mEnter the python version for which you want to compile the python wrapper ('none' if you do not want to compile the python bindings):\e[0m"
 read pythoncompatibility
 ./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(realpath ${FF}/ff) --with-mff-command=$(realpath ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility"
-make -j$(($numcpu - 1))
+make -j$(($numcpu + 1))
 
 if [ "$installpolicy" == "prefix" ]; then
     echo -e "\e[31mPlease now type 'make install' to install ppddl-planner to $PREFIX (may require root privileges)\e[0m"

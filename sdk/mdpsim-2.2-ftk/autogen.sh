@@ -46,8 +46,8 @@ do_cmd() {
 }
 
 do_cmd $ACLOCAL $ACLOCAL_FLAGS
-do_cmd $LIBTOOLIZE --force
+do_cmd $LIBTOOLIZE --force --copy
 do_cmd $AUTOCONF
-do_cmd $AUTOMAKE --add-missing --gnu
+do_cmd $AUTOMAKE --add-missing --copy --gnu
 do_cmd ./configure "$@"
 
