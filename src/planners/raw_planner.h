@@ -70,6 +70,14 @@ BOOST_PARAMETER_NAME(verbosity_level)
 
 class RawPlanner : public BasePlanner
 {
+public :
+    typedef enum
+    {
+        STR_XML_FORMAT,
+        STR_PDDL_FORMAT
+    }
+    str_format_t;
+    
 private :
     const Domain* domain_;
 	const Problem* problem_;
@@ -88,11 +96,45 @@ private :
     /* Checks if the policy need to be optimized in the given state */
 	void check_solve(const PddlState& st);
     
+    #ifdef HAVE_BOOST
+    template <str_format_t str_format>
+    void decode_state(const std::string& state, AtomSet& atoms, ValueMap& values);
+    #endif
     #ifdef HAVE_BOOST_PYTHON
-    /** Get a PPDDL state from a python dictionary */
+    template <str_format_t str_format>
+    void decode_state(const boost::python::str& state, AtomSet& atoms, ValueMap& values);
     void decode_state(const boost::python::dict& state, AtomSet& atoms, ValueMap& values);
+    #endif
+    void decode_state(const std::list<std::vector<std::string> >& stratoms, const std::list<std::pair<std::vector<std::string>, double> >& strvalues, AtomSet& atoms, ValueMap& values);
+    
+    #ifdef HAVE_BOOST
+    template <str_format_t str_format>
+    void encode_state(const AtomSet& atoms, const ValueMap& values, std::string& result);
+    #endif
+    #ifdef HAVE_BOOST_PYTHON
+    template <str_format_t str_format>
+    void encode_state(const AtomSet& atoms, const ValueMap& values, boost::python::str& result);
     void encode_state(const AtomSet& atoms, const ValueMap& values, boost::python::dict& result);
+    #endif
+    
+    #ifdef HAVE_BOOST
+    template <str_format_t str_format>
+    void decode_action(const std::string& action, const Action*& result);
+    #endif
+    #ifdef HAVE_BOOST_PYTHON
+    template <str_format_t str_format>
+    void decode_action(const boost::python::str& action, const Action*& result);
     void decode_action(const boost::python::dict& action, const Action*& result);
+    #endif
+    void decode_action(const std::vector<std::string>& action, const Action*& result);
+    
+    #ifdef HAVE_BOOST
+    template <str_format_t str_format>
+    void encode_action(const Action& action, std::string& result);
+    #endif
+    #ifdef HAVE_BOOST_PYTHON
+    template <str_format_t str_format>
+    void encode_action(const Action& action, boost::python::str& result);
     void encode_action(const Action& action, boost::python::dict& result);
     #endif
 
@@ -149,31 +191,33 @@ public :
 
 	/* Returns the optimal action in the given state */
 	const Action& action(const PddlState& st);
-    std::string action(const std::string& st); /* XML string as in the MDPsim convention */
+    std::string action(const std::string& st, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     #ifdef HAVE_BOOST_PYTHON
-    boost::python::str action(const boost::python::str& st); /* XML string as in the MDPsim convention */
+    boost::python::str action(const boost::python::str& st, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     boost::python::dict action(const boost::python::dict& st);
     #endif
 
 	/* Returns the optimal value in the given state */
 	double value(const PddlState& st);
-    double value(const std::string& st); /* XML string as in the MDPsim convention */
+    double value(const std::string& st, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     #ifdef HAVE_BOOST_PYTHON
-    double value(const boost::python::str& st); /* XML string as in the MDPsim convention */
+    double value(const boost::python::str& st, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     double value(const boost::python::dict& st);
     #endif
     
     /* Samples an initial state */
     void init(PddlState& state, bool& goal);
+    void init(std::string& state, bool& goal, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     #ifdef HAVE_BOOST_PYTHON
-    boost::python::tuple init();
+    boost::python::tuple init(str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
+    boost::python::tuple init(); // dictionary version
     #endif
     
     /* Samples a next state when applying an action in a given state */
 	void next(const PddlState& income, const Action& action, PddlState& outcome, double& reward, bool& goal);
-    //void next(const std::string& income, const std::string& action, std::string& outcome, double& reward, bool& goal); /* XML string as in the MDPsim convention */
+    void next(const std::string& income, const std::string& action, std::string& outcome, double& reward, bool& goal, str_format_t str_format); /* XML string as in the MDPsim convention, or PDDL string */
     #ifdef HAVE_BOOST_PYTHON
-    //boost::python::tuple next(const boost::python::str& income, const boost::python::str& action); /* XML string as in the MDPsim convention */
+    boost::python::tuple next(const boost::python::str& income, const boost::python::str& action, str_format_t str_format); /* XML string as in the MDPsim convention */
     boost::python::tuple next(const boost::python::dict& income, const boost::python::dict& action);
     #endif
     
