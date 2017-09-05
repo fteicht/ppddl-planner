@@ -309,7 +309,7 @@ void RawPlanner::decode_state<RawPlanner::STR_XML_FORMAT>(const std::string& sta
 #endif
 
 
-#ifdef HAVE_BOOST
+#ifdef __HAVE_BOOST
 template <>
 void RawPlanner::decode_state<RawPlanner::STR_PDDL_FORMAT>(const std::string& state, AtomSet& atoms, ValueMap& values)
 {
@@ -648,7 +648,7 @@ void RawPlanner::encode_state<RawPlanner::STR_XML_FORMAT>(const AtomSet& atoms, 
 #endif
 
 
-#ifdef HAVE_PYTHON
+#ifdef __HAVE_PYTHON
 template <>
 void RawPlanner::encode_state<RawPlanner::STR_PDDL_FORMAT>(const AtomSet& atoms, const ValueMap& values, std::string& result)
 {
