@@ -11,10 +11,10 @@ PREFIX=""
 if [ "$installpolicy" == "prefix" ]; then
     echo -e "\e[31mEnter the prefix where you want to install ppddl-planner\e[0m"
     read pfx
-    PREFIX=$(realpath ${pfx})
+    PREFIX=$(readlink -f ${pfx})
     echo "ppddl-planner will be installed in $PREFIX (you will have to explicitly 'make install' in case you need sudo privileges)"
 elif [ "$installpolicy" == "local" ]; then
-    PREFIX=$(realpath ${PWD})
+    PREFIX=$(readlink -f ${PWD})
     echo "ppddl-planner compilation files will be located under $PREFIX"
 else
     echo -e "\e[31mUnexpected choice, exiting now\e[0m"
@@ -48,7 +48,8 @@ echo "Leaving directory $CUDD"
 
 echo "Entering directory $MDPSIM"
 cd $MDPSIM
-autoreconf -f -i;./configure --prefix=$PWD --disable-shared --enable-static CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG"
+autoreconf -f -i
+./configure --prefix=$PWD --disable-shared --enable-static CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG"
 make -j$(($numcpu + 1))
 make install
 cd ../..
@@ -69,7 +70,8 @@ echo "Leaving directory $MFF"
 echo "Compiling ppddl-planner"
 echo -e "\e[31mEnter the python version for which you want to compile the python wrapper ('none' if you do not want to compile the python bindings):\e[0m"
 read pythoncompatibility
-autoreconf -f -i;./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(realpath ${FF}/ff) --with-mff-command=$(realpath ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility"
+autoreconf -f -i
+./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(readlink -f ${FF}/ff) --with-mff-command=$(readlink -f ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility" LIBS="-ldl -lpthread -lutil"
 make -j$(($numcpu + 1))
 
 if [ "$installpolicy" == "prefix" ]; then
