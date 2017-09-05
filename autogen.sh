@@ -35,7 +35,7 @@ LIBTOOLIZE=${LIBTOOLIZE:-libtoolize}
 AUTOCONF=${AUTOCONF:-autoconf}
 AUTOMAKE=${AUTOMAKE:-automake}
 
-#ACLOCAL_FLAGS="-I m4"
+ACLOCAL_FLAGS="-I m4"
 ACLOCAL=`echo $AUTOMAKE | sed s/automake/aclocal/`
 
 rm -f config.cache acconfig.h
