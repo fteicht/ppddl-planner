@@ -810,7 +810,7 @@ void RawPlanner::decode_action<RawPlanner::STR_XML_FORMAT>(const std::string& ac
 #endif
 
 
-#ifdef HAVE_BOOST_PYTHON
+#ifdef HAVE_BOOST
 template <>
 void RawPlanner::decode_action<RawPlanner::STR_PDDL_FORMAT>(const std::string& action, const Action*& result)
 {
