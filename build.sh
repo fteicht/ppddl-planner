@@ -71,7 +71,7 @@ echo "Compiling ppddl-planner"
 echo -e "\e[31mEnter the python version for which you want to compile the python wrapper ('none' if you do not want to compile the python bindings):\e[0m"
 read pythoncompatibility
 autoreconf -f -i
-./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(readlink -f ${FF}/ff) --with-mff-command=$(readlink -f ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility"
+./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(readlink -f ${FF}/ff) --with-mff-command=$(readlink -f ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility" LIBS="-ldl -lpthread -lutil"
 make -j$(($numcpu + 1))
 
 if [ "$installpolicy" == "prefix" ]; then
