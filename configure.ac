@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl Every other copy of the package version number gets its value from here
 AC_INIT([ppddl-planner], [0.3.0])
 
-AC_CONFIG_SRCDIR([configure.in])
+AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
