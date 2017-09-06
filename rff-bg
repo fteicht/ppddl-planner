@@ -1,3 +1,0 @@
-#! /bin/sh
-
-plannerclient --host=localhost --port=2323 --client-name=team-1-rff-bg --planner=complete --algorithm=rdbg --encoding=graph --determinization=most-probable-outcome --deterministic-planner=ff --number-of-particles=10 --probabilistic-threshold=0.2 --goals-limit=100 $@
