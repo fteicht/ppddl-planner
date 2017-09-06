@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 #	 -Wall\
 #	 -g -ggdb -O3
 
+ACLOCAL_AMFLAGS = -I m4
+
 bin_PROGRAMS = plannerclient plannertest
 
 plannerclient_LDADD = -lmdpsim -lm ${CUDD_LDFLAGS}
