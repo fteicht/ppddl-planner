@@ -186,12 +186,12 @@ libppddl_planner_la_SOURCES = \
 
 include_HEADERS = $(COMMON_INCLUDES) $(LIBRARY_INCLUDES)
 
-dist_bin_SCRIPTS = \
-	planner_check_mem.sh\
-	fsp-rbh\
-	fsp-rdh\
-	rff-bg\
-	rff-pg\
-	team-1-script.sh
-
-EXTRA_DIST = autogen.sh
+#dist_bin_SCRIPTS = \
+#	planner_check_mem.sh\
+#	fsp-rbh\
+#	fsp-rdh\
+#	rff-bg\
+#	rff-pg\
+#	team-1-script.sh
+#
+#EXTRA_DIST = autogen.sh
