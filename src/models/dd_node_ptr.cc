@@ -21,7 +21,7 @@
 
 
 #include <sstream>
-#include <mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/actions.h>
 
 #include "dd_node_ptr.h"
 #include "models/symbolic_mdp.h"

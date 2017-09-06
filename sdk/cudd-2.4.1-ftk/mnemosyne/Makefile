@@ -22,17 +22,17 @@ LDFLGS	=
 
 HDRS	=	mnemosyne.h mnemconf.h
 
-all: mnemalyse libmnem.a
+all: ppddl_planner_mnemalyse libppddl_planner_mnem.a
 
-mnemalyse: mnemalyse.o
+ppddl_planner_mnemalyse: mnemalyse.o
 	$(CC) $(LDFLGS) -o $@ mnemalyse.o
 
-libmnem.a: mnemosyne.o
+libppddl_planner_mnem.a: mnemosyne.o
 	ar rcv $@ mnemosyne.o
 	$(RANLIB) $@
 
-mtest: mtest.o libmnem.a
-	$(CC) $(LDFLGS) -o $@ mtest.o libmnem.a
+mtest: mtest.o libppddl_planner_mnem.a
+	$(CC) $(LDFLGS) -o $@ mtest.o libppddl_planner_mnem.a
 
 runmtest: all mtest
 	@echo "running memory waster"
@@ -46,7 +46,7 @@ clean:
 	rm -f mtest core *.o mnem.dat mnem.syms
 
 distclean: clean
-	rm -f *.bak *~ libmnem.a mnemalyse 
+	rm -f *.bak *~ libppddl_planner_mnem.a ppddl_planner_mnemalyse 
 
 
 mnemosyne.o: Makefile mnemosyne.c $(HDRS)

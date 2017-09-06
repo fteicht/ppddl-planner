@@ -20,8 +20,8 @@
 */
 
 #include "symbolic_bounds.h"
-#include <mdpsim/states.h>
-#include <mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/states.h>
+#include <ppddl_planner_mdpsim/actions.h>
 
 #include "models/base_mdp.h"
 

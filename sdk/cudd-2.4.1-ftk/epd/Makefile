@@ -17,7 +17,7 @@ LINTFLAGS = -u -n
 # this is to create the lint library
 LINTSWITCH = -o
 
-P	= epd
+P	= ppddl_planner_epd
 PSRC	= epd.c
 PHDR	= epd.h
 POBJ	= $(PSRC:.c=.o)

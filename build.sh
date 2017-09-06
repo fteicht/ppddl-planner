@@ -55,15 +55,53 @@ make install
 cd ../..
 echo "Leaving directory $MDPSIM"
 
+pass=""
+if [ "$installpolicy" == "prefix" ]; then
+    if [ ! -w $PREFIX ] ; then
+        echo -en "\e[31mEnter password for sudo rights:\e[0m"
+        read -s pass
+    fi
+fi
+
 echo "Entering directory $FF"
 cd $FF
 make -j$(($numcpu + 1))
+FFCOMMAND=""
+if [ "$installpolicy" == "prefix" ]; then
+    if [ -w $PREFIX ] ; then
+        mkdir -p $PREFIX/bin
+        cp ppddl_planner_ff $PREFIX/bin
+        chmod a+x $PREFIX/bin/ppddl_planner_ff
+    else
+        echo $pass | sudo -S mkdir -p $PREFIX/bin
+        echo $pass | sudo -S cp ppddl_planner_ff $PREFIX/bin
+        echo $pass | sudo -S chmod a+x $PREFIX/bin/ppddl_planner_ff
+    fi
+    FFCOMMAND="ppddl_planner_ff"
+else
+    FFCOMMAND=$(readlink -f ppddl_planner_ff)
+fi
 cd ../..
 echo "Leaving directory $FF"
 
 echo "Entering directory $MFF"
 cd $MFF
 make -j$(($numcpu + 1))
+MFFCOMMAND=""
+if [ "$installpolicy" == "prefix" ]; then
+    if [ -w $PREFIX ] ; then
+        mkdir -p $PREFIX/bin
+        cp ppddl_planner_mff $PREFIX/bin
+        chmod a+x $PREFIX/bin/ppddl_planner_mff
+    else
+        echo $pass | sudo -S mkdir -p $PREFIX/bin
+        echo $pass | sudo -S cp ppddl_planner_mff $PREFIX/bin
+        echo $pass | sudo -S chmod a+x $PREFIX/bin/ppddl_planner_mff
+    fi
+    MFFCOMMAND="ppddl_planner_mff"
+else
+    MFFCOMMAND=$(readlink -f ppddl_planner_mff)
+fi
 cd ../..
 echo "Leaving directory $MFF"
 
@@ -71,11 +109,15 @@ echo "Compiling ppddl-planner"
 echo -e "\e[31mEnter the python version for which you want to compile the python wrapper ('none' if you do not want to compile the python bindings):\e[0m"
 read pythoncompatibility
 autoreconf -f -i
-./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$(readlink -f ${FF}/ff) --with-mff-command=$(readlink -f ${MFF}/ff) CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility" LIBS="-ldl -lpthread -lutil"
+./configure --prefix=$PREFIX --with-cudd-prefix=$CUDD --with-mdpsim-prefix=$MDPSIM --with-ff-command=$FFCOMMAND --with-mff-command=$MFFCOMMAND CFLAGS="-O3 -DNDEBUG" CXXFLAGS="-O3 -DNDEBUG" PYTHON_VERSION="$pythoncompatibility"
 make -j$(($numcpu + 1))
 
 if [ "$installpolicy" == "prefix" ]; then
-    echo -e "\e[31mPlease now type 'make install' to install ppddl-planner to $PREFIX (may require root privileges)\e[0m"
+    if [ ! -w $PREFIX ] ; then
+        echo $pass | sudo -S make install
+    else
+        make install
+    fi
 elif [ "$installpolicy" == "local" ]; then
     make install
 fi

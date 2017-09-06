@@ -6,21 +6,21 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = plannerclient plannertest
+bin_PROGRAMS = ppddl_planner_client ppddl_planner_test
 
-plannerclient_LDADD = -lmdpsim -lm ${CUDD_LDFLAGS}
-plannerclient_CPPFLAGS = -Isrc
+ppddl_planner_client_LDADD = -lppddl_planner_mdpsim -lm ${CUDD_LDFLAGS}
+ppddl_planner_client_CPPFLAGS = -Isrc
 
-plannertest_LDADD = -lmdpsim -lm ${CUDD_LDFLAGS}
-plannertest_CPPFLAGS = -Isrc
+ppddl_planner_test_LDADD = -lppddl_planner_mdpsim -lm ${CUDD_LDFLAGS}
+ppddl_planner_test_CPPFLAGS = -Isrc
 
 lib_LTLIBRARIES = libppddl_planner.la
 
 if BOOSTPYTHON
-libppddl_planner_la_LDFLAGS = -lmdpsim -lm ${CUDD_LDFLAGS} ${BOOST_LDFLAGS} -l${BOOST_PYTHON_LIB}
+libppddl_planner_la_LDFLAGS = -lppddl_planner_mdpsim -lm ${CUDD_LDFLAGS} ${BOOST_LDFLAGS} -l${BOOST_PYTHON_LIB}
 libppddl_planner_la_CPPFLAGS = -Isrc ${BOOST_CPPFLAGS} ${PYTHON_CPPFLAGS}
 else
-libppddl_planner_la_LDFLAGS = -lmdpsim -lm ${CUDD_LDFLAGS}
+libppddl_planner_la_LDFLAGS = -lppddl_planner_mdpsim -lm ${CUDD_LDFLAGS}
 libppddl_planner_la_CPPFLAGS = -Isrc
 endif
 
@@ -159,7 +159,7 @@ COMMON_INCLUDES = \
 	src/algorithms/symbolic_search.h
 
 
-plannerclient_SOURCES = \
+ppddl_planner_client_SOURCES = \
 	$(COMMON_SOURCES)\
     $(COMMON_INCLUDES)\
 	src/planners/complete_planner.h\
@@ -170,7 +170,7 @@ plannerclient_SOURCES = \
 	src/planners/anytime_planner.cc\
 	src/main_plannerclient.cc
 
-plannertest_SOURCES = \
+ppddl_planner_test_SOURCES = \
 	$(COMMON_SOURCES)\
     $(COMMON_INCLUDES)\
 	src/planners/test_planner.h\
@@ -184,7 +184,7 @@ libppddl_planner_la_SOURCES = \
     $(LIBRARY_INCLUDES)\
     src/planners/raw_planner.cc
 
-include_HEADERS = $(COMMON_INCLUDES) $(LIBRARY_INCLUDES)
+pkginclude_HEADERS = $(COMMON_INCLUDES) $(LIBRARY_INCLUDES)
 
 dist_bin_SCRIPTS = \
 	planner_check_mem.sh\

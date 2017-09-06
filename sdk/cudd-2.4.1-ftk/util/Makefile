@@ -18,7 +18,7 @@ LINTFLAGS = -u -n
 # this is to create the lint library
 LINTSWITCH = -o
 
-P	= util
+P	= ppddl_planner_util
 PSRC	= cpu_time.c cpu_stats.c getopt.c safe_mem.c strsav.c texpand.c \
 	  ptime.c prtime.c pipefork.c pathsearch.c stub.c \
 	  tmpfile.c datalimit.c

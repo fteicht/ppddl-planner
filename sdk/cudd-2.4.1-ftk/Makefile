@@ -193,7 +193,7 @@ EXE	=
 #---------------------------------------------------------------------------
 
 MFLAG   = -DMNEMOSYNE
-MNEMLIB	= ../mnemosyne/libmnem.a
+MNEMLIB	= ../mnemosyne/libppddl_planner_mnem.a
 
 DDWDIR	= .
 IDIR	= $(DDWDIR)/include

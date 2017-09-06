@@ -22,10 +22,10 @@
 #ifndef TRANSITIONS_BLACKBOX_H_
 #define TRANSITIONS_BLACKBOX_H_
 
-#include <mdpsim/formulas.h>
-#include <mdpsim/expressions.h>
-#include <mdpsim/actions.h>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/formulas.h>
+#include <ppddl_planner_mdpsim/expressions.h>
+#include <ppddl_planner_mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include <list>
 #include <set>
 

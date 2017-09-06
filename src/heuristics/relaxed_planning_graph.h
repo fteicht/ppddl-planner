@@ -22,7 +22,7 @@
 #ifndef RELAXED_PLANNING_GRAPH_H_
 #define RELAXED_PLANNING_GRAPH_H_
 
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include "base_heuristic.h"
 #include "models/relaxed_mdp_graph.h"
 

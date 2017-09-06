@@ -22,7 +22,7 @@
 #ifndef TEST_PLANNER_H_
 #define TEST_PLANNER_H_
 
-#include <mdpsim/states.h>
+#include <ppddl_planner_mdpsim/states.h>
 #include "base_planner.h"
 #include "models/transitions_blackbox.h"
 

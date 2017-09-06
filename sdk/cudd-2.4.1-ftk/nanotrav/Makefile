@@ -13,19 +13,19 @@ PURE	=
 
 EXE	=
 #EXE	= .exe
-TARGET	= nanotrav$(EXE)
+TARGET	= ppddl_planner_nanotrav$(EXE)
 TARGETu = nanotrav-u
 
 WHERE	= ..
 
 INCLUDE = $(WHERE)/include
 
-LIBS	= $(WHERE)/dddmp/libdddmp.la $(WHERE)/cudd/libcudd.la \
-	$(WHERE)/mtr/libmtr.la $(WHERE)/st/libst.la $(WHERE)/util/libutil.la \
-	$(WHERE)/epd/libepd.la
+LIBS	= $(WHERE)/dddmp/libppddl_planner_dddmp.la $(WHERE)/cudd/libppddl_planner_cudd.la \
+	$(WHERE)/mtr/libppddl_planner_mtr.la $(WHERE)/st/libppddl_planner_st.la $(WHERE)/util/libppddl_planner_util.la \
+	$(WHERE)/epd/libppddl_planner_epd.la
 
 MNEMLIB =
-#MNEMLIB	= $(WHERE)/mnemosyne/libmnem.a
+#MNEMLIB	= $(WHERE)/mnemosyne/libppddl_planner_mnem.a
 
 BLIBS	= -kL$(WHERE)/dddmp -kldddmp -kL$(WHERE)/cudd -klcudd -kL$(WHERE)/mtr \
 	-klmtr -kL$(WHERE)/st -klst -kL$(WHERE)/util -klutil \

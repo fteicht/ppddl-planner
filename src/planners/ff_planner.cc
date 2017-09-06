@@ -28,7 +28,7 @@ extern "C" {
 #include <string>
 #include <algorithm>
 #include <set>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/problems.h>
 
 #include "ff_planner.h"
 #include "models/base_determinization.h"

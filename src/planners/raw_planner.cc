@@ -22,7 +22,7 @@
 #include "raw_planner.h"
 #include "algorithms/base_algorithm.h"
 #include "algorithms/graph_gco.h"
-#include <mdpsim/client.h>
+#include <ppddl_planner_mdpsim/client.h>
 
 #include <iostream>
 #include <cerrno>
@@ -40,6 +40,9 @@
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
+#endif
+#ifdef HAVE_BOOST_PYTHON
+#include <boost/python/stl_iterator.hpp>
 #endif
 
 std::string current_file; // needed to parse PDDL files whose parser declares this variable as extern
@@ -338,7 +341,7 @@ struct pddl_state_parser : boost::spirit::qi::grammar<std::string::const_iterato
         boost::spirit::qi::on_error<boost::spirit::qi::fail>
         (
             start
-          , error_
+          , (std::ostream&) error_
                 << boost::phoenix::val("Error! Expecting ")
                 << boost::spirit::_4                               // what failed?
                 << boost::phoenix::val(" here: \"")
@@ -829,7 +832,7 @@ struct pddl_action_parser : boost::spirit::qi::grammar<std::string::const_iterat
         boost::spirit::qi::on_error<boost::spirit::qi::fail>
         (
             start
-          , error_
+          , (std::ostream&) error_
                 << boost::phoenix::val("Error! Expecting ")
                 << boost::spirit::_4                               // what failed?
                 << boost::phoenix::val(" here: \"")

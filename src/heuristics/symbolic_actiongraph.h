@@ -22,9 +22,10 @@
 #ifndef SYMBOLICACTIONGRAPH_
 #define SYMBOLICACTIONGRAPH_
 
+#include <ppddl_planner_mdpsim/states.h>
+#include <ppddl_planner_mdpsim/actions.h>
+
 #include "commons/declarations.h"
-#include "mdpsim/states.h"
-#include "mdpsim/actions.h"
 #include "models/dd_node_ptr.h"
 
 class symbolic_actionnode {

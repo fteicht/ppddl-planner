@@ -12,7 +12,7 @@ SIS	= ..
 LINTCREATEFLAG = -C
 
 # files for the package
-P	= bdd
+P	= ppddl_planner_bdd
 PSRC	= cuddAPI.c cuddAddAbs.c cuddAddApply.c cuddAddFind.c cuddAddIte.c \
 	  cuddAddInv.c cuddAddNeg.c cuddAddWalsh.c cuddAndAbs.c \
 	  cuddAnneal.c cuddApa.c cuddApprox.c cuddBddAbs.c cuddBddCorr.c \
@@ -33,13 +33,13 @@ PLOBJ	= $(PSRC:.c=.lo)
 PHDR    = cudd.h cuddInt.h cuddBdd.h
 
 # files for the test program
-TARGET	= testcudd
+TARGET	= ppddl_planner_testcudd
 SRC	= testcudd.c
 OBJ	    = $(SRC:.c=.o)
 LOBJ	= $(SRC:.c=.lo)
 HDR	=
 
-LIBS	= ../util/libutil.la ../st/libst.la
+LIBS	= ../util/libppddl_planner_util.la ../st/libppddl_planner_st.la
 LINTLIBS= ../util/llib-lutil.ln ../st/llib-lst.ln
 INCLUDE = -I$(CAD)/include -I$(SIS)/include
 

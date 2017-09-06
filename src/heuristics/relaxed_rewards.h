@@ -22,7 +22,7 @@
 #ifndef RELAXED_REWARDS_H_
 #define RELAXED_REWARDS_H_
 
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include "base_heuristic.h"
 
 class RelaxedRewards : public virtual BaseHeuristic

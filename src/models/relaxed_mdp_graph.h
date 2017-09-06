@@ -24,9 +24,9 @@
 
 #include <set>
 #include <list>
-#include <mdpsim/formulas.h>
-#include <mdpsim/actions.h>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/formulas.h>
+#include <ppddl_planner_mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include "models/transitions_blackbox.h"
 #include "heuristics/base_heuristic.h"
 #include "commons/declarations.h"

@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <cstdio>
-#include <mdpsim/formulas.h>
+#include <ppddl_planner_mdpsim/formulas.h>
 
 const StateFormula& state_formula_false = StateFormula::FALSE; // to avoid clashes with CUDD's FALSE
 

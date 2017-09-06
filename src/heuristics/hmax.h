@@ -23,7 +23,7 @@
 #define HMAX_H_
 
 #include <limits>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include "base_heuristic.h"
 
 class HeuristicHmax : public virtual BaseHeuristic

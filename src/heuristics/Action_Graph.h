@@ -23,8 +23,8 @@
 #define ACTIONGRAPH_
 
 #include <set>
-#include <mdpsim/states.h>
-#include <mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/states.h>
+#include <ppddl_planner_mdpsim/actions.h>
 #include "models/graph_mdp.h"
 #include "models/base_mdp.h"
 //#include "Equivalence_Class.h"

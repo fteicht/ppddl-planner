@@ -24,8 +24,8 @@
 #include <sstream>
 #include <limits>
 #include <algorithm>
-#include <mdpsim/domains.h>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/domains.h>
+#include <ppddl_planner_mdpsim/problems.h>
 
 #include "base_determinization.h"
 #include "transitions_blackbox.h"

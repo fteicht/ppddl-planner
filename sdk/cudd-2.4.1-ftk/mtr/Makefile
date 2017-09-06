@@ -28,7 +28,7 @@ WHERE	= ..
 
 INCLUDE = $(WHERE)/include
 
-P	= mtr
+P	= ppddl_planner_mtr
 PSRC    = mtrBasic.c mtrGroup.c
 PHDR    = mtr.h
 POBJ	= $(PSRC:.c=.o)
@@ -42,7 +42,7 @@ UBJ		= $(SRC:.c=.u)
 TARGET	= test$(P)$(EXE)
 TARGETu	= test$(P)-u
 
-LIBS	= ./libmtr.la $(WHERE)/util/libutil.la
+LIBS	= ./libppddl_planner_mtr.la $(WHERE)/util/libppddl_planner_util.la
 
 BLIBS	= -kL. -klmtr -kL$(WHERE)/util -klutil
 

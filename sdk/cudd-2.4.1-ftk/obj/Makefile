@@ -28,8 +28,8 @@ WHERE	= ..
 
 INCLUDE = $(WHERE)/include
 
-LIBS	= ./libobj.la $(WHERE)/cudd/libcudd.la $(WHERE)/mtr/libmtr.la \
-	$(WHERE)/st/libst.la $(WHERE)/util/libutil.la $(WHERE)/epd/libepd.la
+LIBS	= ./libppddl_planner_obj.la $(WHERE)/cudd/libppddl_planner_cudd.la $(WHERE)/mtr/libppddl_planner_mtr.la \
+	$(WHERE)/st/libppddl_planner_st.la $(WHERE)/util/libppddl_planner_util.la $(WHERE)/epd/libppddl_planner_epd.la
 
 MNEMLIB =
 
@@ -43,7 +43,7 @@ LINTLIBS = ./llib-lobj.ln $(WHERE)/cudd/llib-lcudd.ln \
 LDFLAGS =
 
 # files for the package
-P	= obj
+P	= ppddl_planner_obj
 PSRC	= cuddObj.cc
 PHDR	= cuddObj.hh $(INCLUDE)/cudd.h
 POBJ	= $(PSRC:.cc=.o)

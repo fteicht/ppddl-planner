@@ -22,7 +22,7 @@
 #ifndef BASE_PLANNER_H_
 #define BASE_PLANNER_H_
 
-#include <mdpsim/client.h>
+#include <ppddl_planner_mdpsim/client.h>
 
 
 typedef enum

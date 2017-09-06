@@ -26,7 +26,7 @@
 #include <list>
 #include <map>
 #include <set>
-#include "mdpsim/actions.h"
+#include <ppddl_planner_mdpsim/actions.h>
 #include "heuristics/symbolic_actiongraph.h"
 #include "heuristics/Action_Graph.h"
 

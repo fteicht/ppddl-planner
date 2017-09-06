@@ -22,7 +22,7 @@
 #ifndef RELAXED_STEP_DISTANCE_H_
 #define RELAXED_STEP_DISTANCE_H_
 
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/problems.h>
 #include "base_heuristic.h"
 #include "config.h"
 

@@ -144,7 +144,7 @@ EXE	=
 # Files for the Package                                                      #
 #----------------------------------------------------------------------------#
 
-P	= dddmp
+P	= ppddl_planner_dddmp
 PSRC    = dddmpStoreBdd.c dddmpStoreAdd.c dddmpStoreCnf.c \
 	  dddmpLoad.c dddmpLoadCnf.c \
 	  dddmpNodeBdd.c dddmpNodeAdd.c dddmpNodeCnf.c \
@@ -169,14 +169,14 @@ UBJ		= $(SRC:.c=.u)
 
 #MFLAG =
 MFLAG   = -DMNEMOSYNE
-MNEMLIB	= ../mnemosyne/libmnem.la
+MNEMLIB	= ../mnemosyne/libppddl_planner_mnem.la
 
 # This is to create the lint library
 LINTFLAGS = -u -n
 LINTSWITCH = -o
 
-LIBS	= ./libdddmp.la $(WHERE)/cudd/libcudd.la $(WHERE)/mtr/libmtr.la \
-	$(WHERE)/st/libst.la $(WHERE)/util/libutil.la $(WHERE)/epd/libepd.la
+LIBS	= ./libppddl_planner_dddmp.la $(WHERE)/cudd/libppddl_planner_cudd.la $(WHERE)/mtr/libppddl_planner_mtr.la \
+	$(WHERE)/st/libppddl_planner_st.la $(WHERE)/util/libppddl_planner_util.la $(WHERE)/epd/libppddl_planner_epd.la
 
 MNEMLIB =
 

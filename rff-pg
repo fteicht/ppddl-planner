@@ -1,3 +1,3 @@
 #! /bin/sh
 
-plannerclient --host=localhost --port=2323 --client-name=team-1-rff-pg --planner=complete --algorithm=rdpg --encoding=graph --determinization=most-probable-outcome --deterministic-planner=ff --number-of-particles=10 --probabilistic-threshold=0.2 $@
+ppddl_planner_client --host=localhost --port=2323 --client-name=team-1-rff-pg --planner=complete --algorithm=rdpg --encoding=graph --determinization=most-probable-outcome --deterministic-planner=ff --number-of-particles=10 --probabilistic-threshold=0.2 $@

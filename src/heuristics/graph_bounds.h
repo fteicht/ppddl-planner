@@ -18,13 +18,13 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
 
 */
+#include <ppddl_planner_mdpsim/states.h>
+#include <ppddl_planner_mdpsim/actions.h>
+#include <ppddl_planner_mdpsim/problems.h>
 
 #include "commons/declarations.h"
 #include "algorithms/heuristic_algorithm.h"
 #include "models/graph_mdp.h"
-#include "mdpsim/states.h"
-#include "mdpsim/actions.h"
-#include "mdpsim/problems.h"
 #include "Action_Graph.h"
 #include "algorithms/graph_search.h"
 #include "heuristics/base_heuristic.h"

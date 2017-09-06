@@ -23,8 +23,8 @@
 #include <fstream>
 #include <sstream>
 #include <typeinfo>
-#include <mdpsim/domains.h>
-#include <mdpsim/problems.h>
+#include <ppddl_planner_mdpsim/domains.h>
+#include <ppddl_planner_mdpsim/problems.h>
 
 #include "ao_determinization.h"
 

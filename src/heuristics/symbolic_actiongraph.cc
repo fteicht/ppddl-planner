@@ -19,8 +19,8 @@
 
 */
 
+#include <ppddl_planner_mdpsim/types.h>
 #include "heuristics/symbolic_actiongraph.h"
-#include "mdpsim/types.h"
 
 // *****  Symbolic Action Node ******
 // Constructors and destructor
