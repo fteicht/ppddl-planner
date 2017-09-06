@@ -1,3 +1,0 @@
-#! /bin/sh
-
-plannerclient --host=localhost --port=2323 --client-name=team-1-fsp-rdh --planner=complete --algorithm=fsp-star --encoding=graph --heuristic=relaxed-step-distance --epsilon=0.01 --discount-factor=0.8 $@
