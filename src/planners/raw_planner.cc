@@ -310,84 +310,84 @@ void RawPlanner::decode_state<RawPlanner::STR_XML_FORMAT>(const std::string& sta
 
 
 #ifdef HAVE_BOOST
+struct pddl_state_parser : boost::spirit::qi::grammar<std::string::const_iterator, boost::spirit::ascii::space_type>
+{
+    pddl_state_parser() : pddl_state_parser::base_type(start)
+    {
+        ident_string %= boost::spirit::qi::lexeme[boost::spirit::qi::char_("A-Za-z") >> *(boost::spirit::qi::char_("A-Za-z0-9_\x2d"))];
+        
+        start %=
+            boost::spirit::ascii::char_('(') >> 
+                // atoms
+                *( boost::spirit::ascii::char_('(') >>
+                    ident_string[boost::bind(&pddl_state_parser::parse_predicate, this, ::_1)] >>
+                    *(
+                        ident_string[boost::bind(&pddl_state_parser::parse_atom_term, this, ::_1)]
+                    ) >>
+                boost::spirit::ascii::char_(')') ) >>
+                // fluents
+                *( boost::spirit::ascii::char_('(') >> boost::spirit::ascii::char_('=') >> boost::spirit::ascii::char_('(') >>
+                    ident_string[boost::bind(&pddl_state_parser::parse_function, this, ::_1)] >>
+                    *(
+                        ident_string[boost::bind(&pddl_state_parser::parse_fluent_term, this, ::_1)]
+                    ) >>
+                boost::spirit::ascii::char_(')') >> boost::spirit::qi::double_[boost::bind(&pddl_state_parser::parse_value, this, ::_1)] >> boost::spirit::ascii::char_(')')) >>
+            boost::spirit::ascii::char_(')')
+            ;
+        
+        boost::spirit::qi::on_error<boost::spirit::qi::fail>
+        (
+            start
+          , error_
+                << boost::phoenix::val("Error! Expecting ")
+                << boost::spirit::_4                               // what failed?
+                << boost::phoenix::val(" here: \"")
+                << boost::phoenix::construct<std::string>(boost::spirit::_3, boost::spirit::_2)   // iterators to error-pos, end
+                << boost::phoenix::val("\"")
+        );
+    }
+    
+    boost::spirit::qi::rule<std::string::const_iterator, std::string(), boost::spirit::ascii::space_type> ident_string;
+    boost::spirit::qi::rule<std::string::const_iterator, boost::spirit::ascii::space_type> start;
+    std::list<std::vector<std::string> > atoms_;
+    std::list<std::pair<std::vector<std::string>, double> > values_;
+    std::ostringstream error_;
+    
+    void parse_predicate(const std::string& predicate)
+    {
+        atoms_.push_back(std::vector<std::string>());
+        atoms_.back().push_back(predicate);
+    }
+    
+    void parse_atom_term(const std::string& term)
+    {
+        atoms_.back().push_back(term);
+    }
+    
+    void parse_function(const std::string& function)
+    {
+        values_.push_back(std::make_pair(std::vector<std::string>(), 0));
+        values_.back().first.push_back(function);
+    }
+    
+    void parse_fluent_term(const std::string& term)
+    {
+        values_.back().first.push_back(term);
+    }
+    
+    void parse_value(const double& value)
+    {
+        values_.back().second = value;
+    }
+};
+
 template <>
 void RawPlanner::decode_state<RawPlanner::STR_PDDL_FORMAT>(const std::string& state, AtomSet& atoms, ValueMap& values)
 {
     atoms.clear();
     values.clear();
     
-    struct state_parser : boost::spirit::qi::grammar<std::string::const_iterator, boost::spirit::ascii::space_type>
-    {
-        state_parser() : state_parser::base_type(start)
-        {
-            ident_string %= boost::spirit::qi::lexeme[boost::spirit::qi::char_("A-Za-z") >> *(boost::spirit::qi::char_("A-Za-z0-9_\x2d"))];
-            
-            start %=
-                boost::spirit::ascii::char_('(') >> 
-                    // atoms
-                    *( boost::spirit::ascii::char_('(') >>
-                        ident_string[boost::bind(&state_parser::parse_predicate, this, ::_1)] >>
-                        *(
-                            ident_string[boost::bind(&state_parser::parse_atom_term, this, ::_1)]
-                        ) >>
-                    boost::spirit::ascii::char_(')') ) >>
-                    // fluents
-                    *( boost::spirit::ascii::char_('(') >> boost::spirit::ascii::char_('=') >> boost::spirit::ascii::char_('(') >>
-                        ident_string[boost::bind(&state_parser::parse_function, this, ::_1)] >>
-                        *(
-                            ident_string[boost::bind(&state_parser::parse_fluent_term, this, ::_1)]
-                        ) >>
-                    boost::spirit::ascii::char_(')') >> boost::spirit::qi::double_[boost::bind(&state_parser::parse_value, this, ::_1)] >> boost::spirit::ascii::char_(')')) >>
-                boost::spirit::ascii::char_(')')
-                ;
-            
-            boost::spirit::qi::on_error<boost::spirit::qi::fail>
-            (
-                start
-              , error_
-                    << boost::phoenix::val("Error! Expecting ")
-                    << boost::spirit::_4                               // what failed?
-                    << boost::phoenix::val(" here: \"")
-                    << boost::phoenix::construct<std::string>(boost::spirit::_3, boost::spirit::_2)   // iterators to error-pos, end
-                    << boost::phoenix::val("\"")
-            );
-        }
-        
-        boost::spirit::qi::rule<std::string::const_iterator, std::string(), boost::spirit::ascii::space_type> ident_string;
-        boost::spirit::qi::rule<std::string::const_iterator, boost::spirit::ascii::space_type> start;
-        std::list<std::vector<std::string> > atoms_;
-        std::list<std::pair<std::vector<std::string>, double> > values_;
-        std::ostringstream error_;
-        
-        void parse_predicate(const std::string& predicate)
-        {
-            atoms_.push_back(std::vector<std::string>());
-            atoms_.back().push_back(predicate);
-        }
-        
-        void parse_atom_term(const std::string& term)
-        {
-            atoms_.back().push_back(term);
-        }
-        
-        void parse_function(const std::string& function)
-        {
-            values_.push_back(std::make_pair(std::vector<std::string>(), 0));
-            values_.back().first.push_back(function);
-        }
-        
-        void parse_fluent_term(const std::string& term)
-        {
-            values_.back().first.push_back(term);
-        }
-        
-        void parse_value(const double& value)
-        {
-            values_.back().second = value;
-        }
-    };
-    
-    state_parser sp;
+    pddl_state_parser sp;
     std::string::const_iterator iter = state.begin();
     std::string::const_iterator end = state.end();
     bool r = boost::spirit::qi::phrase_parse(iter, end, sp, boost::spirit::ascii::space);
@@ -811,43 +811,43 @@ void RawPlanner::decode_action<RawPlanner::STR_XML_FORMAT>(const std::string& ac
 
 
 #ifdef HAVE_BOOST
+struct pddl_action_parser : boost::spirit::qi::grammar<std::string::const_iterator, boost::spirit::ascii::space_type>
+{
+    pddl_action_parser() : pddl_action_parser::base_type(start)
+    {
+        ident_string %= boost::spirit::qi::lexeme[boost::spirit::qi::char_("A-Za-z") >> *(boost::spirit::qi::char_("A-Za-z0-9_\x2d"))];
+        
+        start %=
+            boost::spirit::ascii::char_('(') >>
+                ident_string[boost::phoenix::push_back(boost::phoenix::ref(straction_), boost::spirit::qi::_1)] >>
+                *(
+                    ident_string[boost::phoenix::push_back(boost::phoenix::ref(straction_), boost::spirit::qi::_1)]
+                ) >>
+            boost::spirit::ascii::char_(')')
+            ;
+        
+        boost::spirit::qi::on_error<boost::spirit::qi::fail>
+        (
+            start
+          , error_
+                << boost::phoenix::val("Error! Expecting ")
+                << boost::spirit::_4                               // what failed?
+                << boost::phoenix::val(" here: \"")
+                << boost::phoenix::construct<std::string>(boost::spirit::_3, boost::spirit::_2)   // iterators to error-pos, end
+                << boost::phoenix::val("\"")
+        );
+    }
+    
+    boost::spirit::qi::rule<std::string::const_iterator, std::string(), boost::spirit::ascii::space_type> ident_string;
+    boost::spirit::qi::rule<std::string::const_iterator, boost::spirit::ascii::space_type> start;
+    std::vector<std::string> straction_;
+    std::ostringstream error_;
+};
+
 template <>
 void RawPlanner::decode_action<RawPlanner::STR_PDDL_FORMAT>(const std::string& action, const Action*& result)
 {
-    struct action_parser : boost::spirit::qi::grammar<std::string::const_iterator, boost::spirit::ascii::space_type>
-    {
-        action_parser() : action_parser::base_type(start)
-        {
-            ident_string %= boost::spirit::qi::lexeme[boost::spirit::qi::char_("A-Za-z") >> *(boost::spirit::qi::char_("A-Za-z0-9_\x2d"))];
-            
-            start %=
-                boost::spirit::ascii::char_('(') >>
-                    ident_string[boost::phoenix::push_back(boost::phoenix::ref(straction_), boost::spirit::qi::_1)] >>
-                    *(
-                        ident_string[boost::phoenix::push_back(boost::phoenix::ref(straction_), boost::spirit::qi::_1)]
-                    ) >>
-                boost::spirit::ascii::char_(')')
-                ;
-            
-            boost::spirit::qi::on_error<boost::spirit::qi::fail>
-            (
-                start
-              , error_
-                    << boost::phoenix::val("Error! Expecting ")
-                    << boost::spirit::_4                               // what failed?
-                    << boost::phoenix::val(" here: \"")
-                    << boost::phoenix::construct<std::string>(boost::spirit::_3, boost::spirit::_2)   // iterators to error-pos, end
-                    << boost::phoenix::val("\"")
-            );
-        }
-        
-        boost::spirit::qi::rule<std::string::const_iterator, std::string(), boost::spirit::ascii::space_type> ident_string;
-        boost::spirit::qi::rule<std::string::const_iterator, boost::spirit::ascii::space_type> start;
-        std::vector<std::string> straction_;
-        std::ostringstream error_;
-    };
-    
-    action_parser ap;
+    pddl_action_parser ap;
     std::string::const_iterator iter = action.begin();
     std::string::const_iterator end = action.end();
     bool r = boost::spirit::qi::phrase_parse(iter, end, ap, boost::spirit::ascii::space);

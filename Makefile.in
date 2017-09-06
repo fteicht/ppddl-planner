@@ -94,7 +94,12 @@ host_triplet = @host@
 bin_PROGRAMS = plannerclient$(EXEEXT) plannertest$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_boost_base.m4 \
+	$(top_srcdir)/m4/ax_boost_python.m4 \
+	$(top_srcdir)/m4/ax_python_devel.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -597,6 +602,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
+
+#AM_CXXFLAGS =\
+#	 -Wall\
+#	 -g -ggdb -O3
+ACLOCAL_AMFLAGS = -I m4
 plannerclient_LDADD = -lmdpsim -lm ${CUDD_LDFLAGS}
 plannerclient_CPPFLAGS = -Isrc
 plannertest_LDADD = -lmdpsim -lm ${CUDD_LDFLAGS}
